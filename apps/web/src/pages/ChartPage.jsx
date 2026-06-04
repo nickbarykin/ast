@@ -63,13 +63,16 @@ export default function ChartPage() {
       console.table(
         Object.values(model.points).map((point) => ({
           id: point.id,
-          type: point.type,
+          entityId: point.entityId,
+          entityType: point.type,
+          pointType: point.pointType,
           longitude: point.longitude?.toFixed?.(3),
           sign: point.signId,
           degree: point.degreeInSign?.toFixed?.(3),
-          house: point.houseNumber,
-          angle: point.chartAngle?.toFixed?.(3),
-          retrograde: point.isRetrograde
+          house: point.houseNumber ?? '',
+          chartAngle: point.chartAngle?.toFixed?.(3),
+          screenAngle: point.screenAngle?.toFixed?.(3),
+          retrograde: point.isRetrograde ?? ''
         }))
       )
 
@@ -86,11 +89,32 @@ export default function ChartPage() {
 
       console.table(
         model.aspects.map((aspect) => ({
+          id: aspect.id,
           type: aspect.type,
+          aspectType: aspect.aspectType,
           a: aspect.pointAId,
           b: aspect.pointBId,
           angle: aspect.actualAngle.toFixed(3),
           orb: aspect.orb.toFixed(3)
+        }))
+      )
+
+      console.table(
+        model.signs.map((sign) => ({
+          id: sign.id,
+          entityId: sign.entityId,
+          index: sign.index,
+          start: sign.startLongitude,
+          end: sign.endLongitude
+        }))
+      )
+
+      console.table(
+        model.relations.map((relation) => ({
+          id: relation.id,
+          relationType: relation.relationType,
+          source: relation.sourceEntityId,
+          target: relation.targetEntityId
         }))
       )
 

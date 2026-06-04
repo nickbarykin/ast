@@ -1,7 +1,8 @@
 // src/astrology/model/aspects.js
 
-import { AspectType } from './enums'
+import { AspectType, EntityType, RelationType } from './enums'
 import { getShortestAngularDistance } from './angle'
+import { createAspectId } from './ids'
 
 export const MAJOR_ASPECTS = Object.freeze([
   {
@@ -41,11 +42,26 @@ export function findAspectBetween(pointA, pointB) {
     const orb = Math.abs(distance - aspectDefinition.angle)
 
     if (orb <= aspectDefinition.orb) {
+      const id = createAspectId(
+        pointA.id,
+        pointB.id,
+        aspectDefinition.type
+      )
+
       return {
-        id: `${pointA.id}_${pointB.id}_${aspectDefinition.type}`,
-        type: aspectDefinition.type,
+        id,
+        entityId: id,
+        type: EntityType.ASPECT,
+        relationType: RelationType.ASPECT,
+
+        aspectType: aspectDefinition.type,
+
         pointAId: pointA.id,
         pointBId: pointB.id,
+
+        sourceEntityId: pointA.entityId,
+        targetEntityId: pointB.entityId,
+
         exactAngle: aspectDefinition.angle,
         actualAngle: distance,
         orb
@@ -65,7 +81,7 @@ export function createAspectModel(points) {
       const pointA = pointList[i]
       const pointB = pointList[j]
 
-      if (pointA.type !== 'planet' || pointB.type !== 'planet') {
+      if (pointA.pointType !== 'planet' || pointB.pointType !== 'planet') {
         continue
       }
 

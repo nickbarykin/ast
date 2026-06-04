@@ -1,7 +1,9 @@
 // src/astrology/model/houses.js
 
+import { EntityType } from './enums'
 import { getClockwiseDistance, normalizeDegrees } from './angle'
 import { getZodiacPosition } from './zodiac'
+import { createHouseId, createSignId } from './ids'
 
 export function createHouseModel(houseCusps) {
   return houseCusps.map((cuspLongitude, index) => {
@@ -11,6 +13,9 @@ export function createHouseModel(houseCusps) {
 
     return {
       id: `house_${index + 1}`,
+      entityId: createHouseId(index + 1),
+      type: EntityType.HOUSE,
+
       number: index + 1,
 
       cuspLongitude,
@@ -18,6 +23,7 @@ export function createHouseModel(houseCusps) {
       size,
 
       signId: zodiacPosition.signId,
+      signEntityId: createSignId(zodiacPosition.signId),
       signIndex: zodiacPosition.signIndex,
       degreeInSign: zodiacPosition.degreeInSign
     }
@@ -26,6 +32,7 @@ export function createHouseModel(houseCusps) {
 
 export function isLongitudeInsideHouse(longitude, house) {
   const normalizedLongitude = normalizeDegrees(longitude)
+
   const distanceFromCusp = getClockwiseDistance(
     house.cuspLongitude,
     normalizedLongitude
@@ -36,8 +43,8 @@ export function isLongitudeInsideHouse(longitude, house) {
 
 export function findHouseByLongitude(longitude, houses) {
   const normalizedLongitude = normalizeDegrees(longitude)
+
   return houses.find((house) => (
     isLongitudeInsideHouse(normalizedLongitude, house)
   )) || null
-
 }

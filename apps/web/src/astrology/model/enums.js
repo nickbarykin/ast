@@ -64,3 +64,19 @@ export const AspectType = Object.freeze({
   TRINE: 'trine',
   OPPOSITION: 'opposition'
 })
+
+export const EntityType = Object.freeze({
+  CHART: 'chart',
+  POINT: 'point',
+  HOUSE: 'house',
+  SIGN: 'sign',
+  ASPECT: 'aspect',
+  RELATION: 'relation'
+})
+
+export const RelationType = Object.freeze({
+  ASPECT: 'aspect',
+  POINT_IN_HOUSE: 'point_in_house',
+  POINT_IN_SIGN: 'point_in_sign',
+  HOUSE_IN_SIGN: 'house_in_sign'
+})

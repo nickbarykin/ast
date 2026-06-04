@@ -28,20 +28,27 @@ export function rotateLongitude(longitude, originLongitude) {
   return normalizeDegrees(longitude - originLongitude)
 }
 
-/**
- * Converts astrological longitude to SVG angle.
- *
- * Astrology:
- * - 0 Aries starts at 0°
- * - signs usually go counter-clockwise on the chart
- *
- * SVG:
- * - 0° is usually top after polar conversion
- * - positive angles often go clockwise depending on implementation
- *
- * For our chart we keep this function centralized,
- * so we do not guess rotation inside components.
- */
 export function longitudeToChartAngle(longitude, ascendantLongitude = 0) {
   return normalizeDegrees(180 - rotateLongitude(longitude, ascendantLongitude))
+}
+
+/**
+ * Final conversion from chart-space angle to screen-space angle.
+ *
+ * For now chart angle and screen angle are the same,
+ * because polarToCartesian already applies its own SVG correction:
+ *
+ * radians = (angle - 90) * Math.PI / 180
+ *
+ * But this function must exist so rendering code never directly depends
+ * on astrology math.
+ */
+export function chartAngleToScreenAngle(chartAngle) {
+  return normalizeDegrees(chartAngle)
+}
+
+export function longitudeToScreenAngle(longitude, ascendantLongitude = 0) {
+  return chartAngleToScreenAngle(
+    longitudeToChartAngle(longitude, ascendantLongitude)
+  )
 }

@@ -37,3 +37,25 @@ export const SIGN_IDS = Object.freeze([
   SignId.AQUARIUS,
   SignId.PISCES
 ])
+
+export const CHART_ID = 'chart:natal'
+
+export function createPointId(pointId) {
+  return `point:${pointId}`
+}
+
+export function createHouseId(houseNumber) {
+  return `house:${houseNumber}`
+}
+
+export function createSignId(signId) {
+  return `sign:${signId}`
+}
+
+export function createAspectId(pointAId, pointBId, aspectType) {
+  return `aspect:${pointAId}:${pointBId}:${aspectType}`
+}
+
+export function createRelationId(type, sourceId, targetId) {
+  return `relation:${type}:${sourceId}:${targetId}`
+}

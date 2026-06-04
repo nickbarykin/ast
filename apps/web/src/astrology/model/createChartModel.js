@@ -17,7 +17,7 @@ export function createChartModel(rawChart, options = {}) {
     },
 
     getPlanets() {
-      return Object.values(model.points).filter((point) => point.type === 'planet')
+      return Object.values(model.points).filter((point) => point.pointType === 'planet')
     },
 
     getAngles() {

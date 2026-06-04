@@ -1,24 +1,78 @@
 // src/astrology/model/normalizeChartData.js
 
-import { PointType, PlanetId, AngleId, ZodiacMode, HouseSystem } from './enums'
-import { PLANET_IDS } from './ids'
+import {
+  EntityType,
+  PointType,
+  AngleId,
+  ZodiacMode,
+  HouseSystem
+} from './enums'
+
+import {
+  CHART_ID,
+  PLANET_IDS,
+  createPointId,
+  createSignId
+} from './ids'
+
 import { assertRawChartData, assertPlanetData } from './validators'
 import { getZodiacPosition } from './zodiac'
-import { longitudeToChartAngle, normalizeDegrees } from './angle'
-import { createHouseModel, findHouseByLongitude } from './houses'
+
+import {
+  longitudeToChartAngle,
+  longitudeToScreenAngle,
+  normalizeDegrees
+} from './angle'
+
+import {
+  createHouseModel,
+  findHouseByLongitude
+} from './houses'
+
+import { createSignModel } from './signs'
 import { createAspectModel } from './aspects'
+
+import {
+  createPointSignRelation,
+  createPointHouseRelation,
+  createHouseSignRelation
+} from './relations'
+
+function createChartEntity(rawChart, options, ascendantLongitude, mcLongitude) {
+  return {
+    id: CHART_ID,
+    entityId: CHART_ID,
+    type: EntityType.CHART,
+
+    chartType: options.chartType || 'natal',
+
+    julianDay: rawChart.julianDay,
+    zodiac: options.zodiac || ZodiacMode.TROPICAL,
+    houseSystem: options.houseSystem || HouseSystem.PLACIDUS,
+
+    originPointId: AngleId.ASCENDANT,
+    originPointEntityId: createPointId(AngleId.ASCENDANT),
+
+    ascendantLongitude,
+    mcLongitude
+  }
+}
 
 function createPlanetPoint(planetId, rawPlanet, ascendantLongitude, houses) {
   assertPlanetData(rawPlanet, planetId)
 
   const longitude = normalizeDegrees(rawPlanet.longitude)
   const zodiacPosition = getZodiacPosition(longitude)
-  const chartAngle = longitudeToChartAngle(longitude, ascendantLongitude)
   const house = findHouseByLongitude(longitude, houses)
+
+  const chartAngle = longitudeToChartAngle(longitude, ascendantLongitude)
+  const screenAngle = longitudeToScreenAngle(longitude, ascendantLongitude)
 
   return {
     id: planetId,
-    type: PointType.PLANET,
+    entityId: createPointId(planetId),
+    type: EntityType.POINT,
+    pointType: PointType.PLANET,
 
     longitude,
     latitude: rawPlanet.latitude,
@@ -27,34 +81,98 @@ function createPlanetPoint(planetId, rawPlanet, ascendantLongitude, houses) {
     isRetrograde: rawPlanet.speed < 0,
 
     signId: zodiacPosition.signId,
+    signEntityId: createSignId(zodiacPosition.signId),
     signIndex: zodiacPosition.signIndex,
     degreeInSign: zodiacPosition.degreeInSign,
 
     houseId: house?.id || null,
+    houseEntityId: house?.entityId || null,
     houseNumber: house?.number || null,
 
     chartAngle,
-    displayAngle: chartAngle
+    screenAngle,
+    displayAngle: screenAngle
   }
 }
 
-function createAnglePoint(angleId, longitude, ascendantLongitude) {
+function createAnglePoint(angleId, longitude, ascendantLongitude, houses) {
   const normalizedLongitude = normalizeDegrees(longitude)
   const zodiacPosition = getZodiacPosition(normalizedLongitude)
+  const house = findHouseByLongitude(normalizedLongitude, houses)
+
+  const chartAngle = longitudeToChartAngle(
+    normalizedLongitude,
+    ascendantLongitude
+  )
+
+  const screenAngle = longitudeToScreenAngle(
+    normalizedLongitude,
+    ascendantLongitude
+  )
 
   return {
     id: angleId,
-    type: PointType.ANGLE,
+    entityId: createPointId(angleId),
+    type: EntityType.POINT,
+    pointType: PointType.ANGLE,
 
     longitude: normalizedLongitude,
 
     signId: zodiacPosition.signId,
+    signEntityId: createSignId(zodiacPosition.signId),
     signIndex: zodiacPosition.signIndex,
     degreeInSign: zodiacPosition.degreeInSign,
 
-    chartAngle: longitudeToChartAngle(normalizedLongitude, ascendantLongitude),
-    displayAngle: longitudeToChartAngle(normalizedLongitude, ascendantLongitude)
+    houseId: house?.id || null,
+    houseEntityId: house?.entityId || null,
+    houseNumber: house?.number || null,
+
+    chartAngle,
+    screenAngle,
+    displayAngle: screenAngle
   }
+}
+
+function createRelations(points, houses, signs, aspects) {
+  const result = []
+
+  const signById = Object.fromEntries(
+    signs.map((sign) => [sign.id, sign])
+  )
+
+  Object.values(points).forEach((point) => {
+    const sign = signById[point.signId]
+
+    const pointSignRelation = createPointSignRelation(point, sign)
+
+    if (pointSignRelation) {
+      result.push(pointSignRelation)
+    }
+
+    const house = houses.find((item) => item.number === point.houseNumber)
+
+    const pointHouseRelation = createPointHouseRelation(point, house)
+
+    if (pointHouseRelation) {
+      result.push(pointHouseRelation)
+    }
+  })
+
+  houses.forEach((house) => {
+    const sign = signById[house.signId]
+
+    const houseSignRelation = createHouseSignRelation(house, sign)
+
+    if (houseSignRelation) {
+      result.push(houseSignRelation)
+    }
+  })
+
+  aspects.forEach((aspect) => {
+    result.push(aspect)
+  })
+
+  return result
 }
 
 export function normalizeChartData(rawChart, options = {}) {
@@ -64,6 +182,14 @@ export function normalizeChartData(rawChart, options = {}) {
   const ascendantLongitude = normalizeDegrees(rawChart.houses.ascendant)
   const mcLongitude = normalizeDegrees(rawChart.houses.mc)
 
+  const chart = createChartEntity(
+    rawChart,
+    options,
+    ascendantLongitude,
+    mcLongitude
+  )
+
+  const signs = createSignModel()
   const houses = createHouseModel(houseCusps)
 
   const points = {}
@@ -84,50 +210,64 @@ export function normalizeChartData(rawChart, options = {}) {
   points[AngleId.ASCENDANT] = createAnglePoint(
     AngleId.ASCENDANT,
     ascendantLongitude,
-    ascendantLongitude
+    ascendantLongitude,
+    houses
   )
 
   points[AngleId.DESCENDANT] = createAnglePoint(
     AngleId.DESCENDANT,
     ascendantLongitude + 180,
-    ascendantLongitude
+    ascendantLongitude,
+    houses
   )
 
   points[AngleId.MC] = createAnglePoint(
     AngleId.MC,
     mcLongitude,
-    ascendantLongitude
+    ascendantLongitude,
+    houses
   )
 
   points[AngleId.IC] = createAnglePoint(
     AngleId.IC,
     mcLongitude + 180,
-    ascendantLongitude
+    ascendantLongitude,
+    houses
   )
 
   if (typeof rawChart.houses.vertex === 'number') {
     points[AngleId.VERTEX] = createAnglePoint(
       AngleId.VERTEX,
       rawChart.houses.vertex,
-      ascendantLongitude
+      ascendantLongitude,
+      houses
     )
   }
 
   const aspects = createAspectModel(points)
+  const relations = createRelations(points, houses, signs, aspects)
 
   return {
+    id: chart.id,
+    entityId: chart.entityId,
+    type: chart.type,
+
+    chart,
+
     meta: {
-      julianDay: rawChart.julianDay,
-      zodiac: options.zodiac || ZodiacMode.TROPICAL,
-      houseSystem: options.houseSystem || HouseSystem.PLACIDUS,
-      origin: AngleId.ASCENDANT,
+      julianDay: chart.julianDay,
+      zodiac: chart.zodiac,
+      houseSystem: chart.houseSystem,
+      origin: chart.originPointId,
       ascendantLongitude,
       mcLongitude
     },
 
+    signs,
     points,
     houses,
     aspects,
+    relations,
 
     raw: rawChart
   }

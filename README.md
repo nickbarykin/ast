@@ -1242,10 +1242,10 @@ Should not require rewriting the data model.
 
 ## Data Model
 
-- [ ] Define ChartEntity
+- [x] Define ChartEntity
 - [x] Define PointEntity
 - [x] Define HouseEntity
-- [ ] Define SignEntity
+- [x] Define SignEntity
 - [x] Define AspectEntity
 - [x] Define Relation
 - [x] Define stable ID format
@@ -1261,7 +1261,7 @@ Should not require rewriting the data model.
 - [x] Normalize backend planets into points
 - [x] Normalize angles into points
 - [x] Normalize houses
-- [ ] Add signs to chart
+- [x] Add signs to chart
 - [x] Assign each point to a sign
 - [x] Assign each point to a house
 - [x] Calculate aspects
@@ -1278,7 +1278,7 @@ Should not require rewriting the data model.
 - [x] Implement longitude → degree in sign
 - [x] Implement longitude → house
 - [x] Implement longitude → chart angle
-- [ ] Implement chart angle → screen angle
+- [x] Implement chart angle → screen angle
 - [x] Implement Ascendant-based rotation
 - [x] Remove all magic rotation formulas
 

@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+  <defs>
+    <style>
+      :root { --ink:#1d232b; --muted:#d9dde2; }
+      .bg{fill:#fff}
+      .section{fill:none;stroke:var(--muted);stroke-width:1}
+      .title{font:700 22px Arial, sans-serif;letter-spacing:.12em;fill:var(--ink)}
+      .label{font:16px Arial, sans-serif;fill:var(--ink);text-anchor:middle}
+      .icon{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+      .thin{stroke-width:2;vector-effect:non-scaling-stroke}
+      .fill{fill:var(--ink);stroke:none}
+      .num{font:700 18px Arial, sans-serif;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+      .word{font:28px Arial, sans-serif;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+    </style>
+    <symbol id="sun" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="32" r="22"/><circle class="fill" cx="32" cy="32" r="5"/></symbol>
+    <symbol id="moon" viewBox="0 0 64 64"><path class="icon" d="M42 9a24 24 0 1 0 0 46a20 24 0 1 1 0-46z"/></symbol>
+    <symbol id="mercury" viewBox="0 0 64 64"><path class="icon" d="M22 8c4 6 16 6 20 0"/><circle class="icon" cx="32" cy="27" r="14"/><path class="icon" d="M32 41v17M23 51h18"/></symbol>
+    <symbol id="venus" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="22" r="15"/><path class="icon" d="M32 37v21M23 49h18"/></symbol>
+    <symbol id="mars" viewBox="0 0 64 64"><circle class="icon" cx="25" cy="39" r="15"/><path class="icon" d="M36 28L53 11M42 11h11v11"/></symbol>
+    <symbol id="jupiter" viewBox="0 0 64 64"><path class="icon" d="M18 16c14 0 13 20 0 20h28M40 10v48"/></symbol>
+    <symbol id="saturn" viewBox="0 0 64 64"><path class="icon" d="M29 8v50M18 20h22M40 31c16 3 10 24-5 22"/></symbol>
+    <symbol id="uranus" viewBox="0 0 64 64"><path class="icon" d="M19 12v34M45 12v34M32 8v50M15 22h34"/><circle class="icon" cx="32" cy="48" r="8"/></symbol>
+    <symbol id="neptune" viewBox="0 0 64 64"><path class="icon" d="M14 18c7 18 29 18 36 0M32 12v46M22 49h20M18 18v10M46 18v10"/></symbol>
+    <symbol id="pluto" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="18" r="10"/><path class="icon" d="M18 32c3 11 25 11 28 0M32 28v30M23 46h18"/></symbol>
+    <symbol id="nodeN" viewBox="0 0 64 64"><path class="icon" d="M15 45c0-11 8-20 17-20s17 9 17 20"/><circle class="icon" cx="18" cy="45" r="7"/><circle class="icon" cx="46" cy="45" r="7"/></symbol>
+    <symbol id="nodeS" viewBox="0 0 64 64"><path class="icon" d="M49 19c0 11-8 20-17 20S15 30 15 19"/><circle class="icon" cx="18" cy="19" r="7"/><circle class="icon" cx="46" cy="19" r="7"/></symbol>
+    <symbol id="chiron" viewBox="0 0 64 64"><circle class="icon" cx="28" cy="46" r="10"/><path class="icon" d="M28 36V8M28 21l14-13M28 21l13 13"/></symbol>
+    <symbol id="fortune" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="32" r="21"/><path class="icon" d="M15 32h34M32 15v34"/><circle class="fill" cx="32" cy="32" r="5"/></symbol>
+
+    <symbol id="aries" viewBox="0 0 64 64"><path class="icon" d="M32 55V28C32 11 9 10 10 29M32 28C32 11 55 10 54 29"/></symbol>
+    <symbol id="taurus" viewBox="0 0 64 64"><path class="icon" d="M17 9c5 11 25 11 30 0"/><circle class="icon" cx="32" cy="36" r="18"/></symbol>
+    <symbol id="gemini" viewBox="0 0 64 64"><path class="icon" d="M19 11c8 4 18 4 26 0M19 53c8-4 18-4 26 0M22 13v38M42 13v38"/></symbol>
+    <symbol id="cancer" viewBox="0 0 64 64"><path class="icon" d="M13 26c8-12 27-12 38-4M51 38c-8 12-27 12-38 4"/><circle class="icon" cx="24" cy="24" r="8"/><circle class="icon" cx="40" cy="40" r="8"/></symbol>
+    <symbol id="leo" viewBox="0 0 64 64"><circle class="icon" cx="22" cy="42" r="9"/><path class="icon" d="M31 41c14-9 23-30 8-31c-15-1-13 23-4 36c5 8 15 9 20 1"/></symbol>
+    <symbol id="virgo" viewBox="0 0 64 64"><path class="icon" d="M13 16v36M25 16v36M37 16v36M13 22c3-6 9-6 12 0M25 22c3-6 9-6 12 0M37 22c8-11 18 1 10 15l-9 15M48 37l9 15"/></symbol>
+    <symbol id="libra" viewBox="0 0 64 64"><path class="icon" d="M10 43h44M10 52h44M23 35c0-12 18-12 18 0"/></symbol>
+    <symbol id="scorpio" viewBox="0 0 64 64"><path class="icon" d="M13 16v36M25 16v36M37 16v28c0 12 13 12 17 2M13 22c3-6 9-6 12 0M25 22c3-6 9-6 12 0M48 46h8v-8"/></symbol>
+    <symbol id="sagittarius" viewBox="0 0 64 64"><path class="icon" d="M14 50L50 14M31 14h19v19M24 28l12 12"/></symbol>
+    <symbol id="capricorn" viewBox="0 0 64 64"><path class="icon" d="M11 18c6-9 14-3 14 8v25M25 26c6-14 17-7 17 7v14c0 10 13 10 13 0s-13-12-20 3"/></symbol>
+    <symbol id="aquarius" viewBox="0 0 64 64"><path class="icon" d="M8 25l6-6l6 6l6-6l6 6l6-6l6 6l6-6l6 6M8 43l6-6l6 6l6-6l6 6l6-6l6 6l6-6l6 6"/></symbol>
+    <symbol id="pisces" viewBox="0 0 64 64"><path class="icon" d="M17 10c11 12 11 32 0 44M47 10c-11 12-11 32 0 44M14 32h36"/></symbol>
+
+    <symbol id="conj" viewBox="0 0 64 64"><circle class="icon" cx="23" cy="41" r="9"/><path class="icon" d="M29 35L48 16"/></symbol>
+    <symbol id="opp" viewBox="0 0 64 64"><circle class="icon" cx="20" cy="44" r="7"/><circle class="icon" cx="44" cy="20" r="7"/><path class="icon" d="M25 39l14-14"/></symbol>
+    <symbol id="trine" viewBox="0 0 64 64"><path class="icon" d="M32 11L54 51H10z"/></symbol>
+    <symbol id="square" viewBox="0 0 64 64"><path class="icon" d="M18 18h28v28H18z"/></symbol>
+    <symbol id="sextile" viewBox="0 0 64 64"><path class="icon" d="M32 12v40M15 22l34 20M49 22L15 42"/></symbol>
+    <symbol id="quincunx" viewBox="0 0 64 64"><path class="icon" d="M20 16l24 32M44 16L20 48"/></symbol>
+    <symbol id="semisquare" viewBox="0 0 64 64"><path class="icon" d="M20 14v36h28"/></symbol>
+    <symbol id="star" viewBox="0 0 64 64"><path class="icon" d="M32 8l7 17h18l-14 11l5 18l-16-10l-16 10l5-18L7 25h18z"/></symbol>
+    <symbol id="fire" viewBox="0 0 64 64"><path class="icon" d="M32 10L54 52H10z"/></symbol>
+    <symbol id="earth" viewBox="0 0 64 64"><path class="icon" d="M10 14h44L32 54z"/></symbol>
+    <symbol id="air" viewBox="0 0 64 64"><path class="icon" d="M32 10L54 52H10zM18 39h28"/></symbol>
+    <symbol id="water" viewBox="0 0 64 64"><path class="icon" d="M10 14h44L32 54zM18 29h28"/></symbol>
+
+    <symbol id="search" viewBox="0 0 64 64"><circle class="icon" cx="27" cy="27" r="17"/><path class="icon" d="M40 40l13 13"/></symbol>
+    <symbol id="plus" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="32" r="22"/><path class="icon" d="M32 20v24M20 32h24"/></symbol>
+    <symbol id="edit" viewBox="0 0 64 64"><path class="icon" d="M15 49l4-15l25-25l11 11l-25 25zM40 13l11 11M19 34l11 11"/></symbol>
+    <symbol id="trash" viewBox="0 0 64 64"><path class="icon" d="M18 20h28M24 20v30h16V20M27 20v-6h10v6M28 27v16M36 27v16"/></symbol>
+    <symbol id="heart" viewBox="0 0 64 64"><path class="icon" d="M32 53S12 40 12 25c0-9 12-15 20-4c8-11 20-5 20 4c0 15-20 28-20 28z"/></symbol>
+    <symbol id="bookmark" viewBox="0 0 64 64"><path class="icon" d="M21 12h22v40L32 43L21 52z"/></symbol>
+    <symbol id="share" viewBox="0 0 64 64"><path class="icon" d="M32 42V12M22 22l10-10l10 10M18 36v14h28V36"/></symbol>
+    <symbol id="download" viewBox="0 0 64 64"><path class="icon" d="M32 12v30M21 31l11 11l11-11M18 49h28"/></symbol>
+    <symbol id="info" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="32" r="22"/><path class="icon" d="M32 29v15"/><circle class="fill" cx="32" cy="21" r="3"/></symbol>
+    <symbol id="help" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="32" r="22"/><path class="icon" d="M24 25c2-9 17-9 17 2c0 8-9 7-9 15"/><circle class="fill" cx="32" cy="49" r="3"/></symbol>
+    <symbol id="filters" viewBox="0 0 64 64"><path class="icon" d="M12 18h40M12 32h40M12 46h40"/><circle class="icon" cx="25" cy="18" r="4"/><circle class="icon" cx="40" cy="32" r="4"/><circle class="icon" cx="30" cy="46" r="4"/></symbol>
+    <symbol id="calendar" viewBox="0 0 64 64"><path class="icon" d="M16 16h32v34H16zM16 25h32M24 11v10M40 11v10"/><path class="thin icon" d="M24 33h1M32 33h1M40 33h1M24 41h1M32 41h1M40 41h1"/></symbol>
+    <symbol id="time" viewBox="0 0 64 64"><circle class="icon" cx="32" cy="32" r="22"/><path class="icon" d="M32 18v16l11 7"/></symbol>
+    <symbol id="menu" viewBox="0 0 64 64"><path class="icon" d="M16 22h32M16 32h32M16 42h32"/></symbol>
+    <symbol id="settings" viewBox="0 0 64 64"><path class="icon" d="M32 12l5 5l7-2l5 9l-5 5c1 2 1 4 0 6l5 5l-5 9l-7-2l-5 5l-5-5l-7 2l-5-9l5-5c-1-2-1-4 0-6l-5-5l5-9l7 2z"/><circle class="icon" cx="32" cy="32" r="8"/></symbol>
+  </defs>
+  <rect class="bg" width="1600" height="980"/>
+  <g id="planets"><text class="title" x="40" y="72">ПЛАНЕТЫ</text></g>
+  <g id="nodes"><text class="title" x="1130" y="72">ЛУННЫЕ УЗЛЫ И ДРУГОЕ</text></g>
+  <line class="section" x1="40" y1="235" x2="1560" y2="235"/>
+  <line class="section" x1="1090" y1="55" x2="1090" y2="210"/>
+  <g id="zodiac"><text class="title" x="40" y="275">ЗНАКИ ЗОДИАКА</text></g>
+  <line class="section" x1="40" y1="420" x2="1560" y2="420"/>
+  <g id="houses"><text class="title" x="40" y="465">ДОМА (12 ДОМОВ)</text></g>
+  <g id="elements"><text class="title" x="1130" y="465">СТИХИИ</text></g>
+  <line class="section" x1="40" y1="590" x2="1560" y2="590"/>
+  <line class="section" x1="1110" y1="430" x2="1110" y2="570"/>
+  <g id="aspects"><text class="title" x="40" y="625">АСПЕКТЫ</text></g>
+  <g id="angles"><text class="title" x="950" y="625">УГЛЫ И ТОЧКИ</text></g>
+  <line class="section" x1="900" y1="610" x2="900" y2="770"/>
+  <line class="section" x1="40" y1="790" x2="1560" y2="790"/>
+  <g id="ui"><text class="title" x="40" y="825">ДРУГИЕ ОБОЗНАЧЕНИЯ И ИНТЕРФЕЙС</text></g>
+
+  <g transform="translate(40 95)">
+    <g transform="translate(0 0)"><use href="#sun" width="70" height="70"/><text class="label" x="35" y="100">Солнце</text></g>
+    <g transform="translate(110 0)"><use href="#moon" width="70" height="70"/><text class="label" x="35" y="100">Луна</text></g>
+    <g transform="translate(220 0)"><use href="#mercury" width="70" height="70"/><text class="label" x="35" y="100">Меркурий</text></g>
+    <g transform="translate(330 0)"><use href="#venus" width="70" height="70"/><text class="label" x="35" y="100">Венера</text></g>
+    <g transform="translate(440 0)"><use href="#mars" width="70" height="70"/><text class="label" x="35" y="100">Марс</text></g>
+    <g transform="translate(550 0)"><use href="#jupiter" width="70" height="70"/><text class="label" x="35" y="100">Юпитер</text></g>
+    <g transform="translate(660 0)"><use href="#saturn" width="70" height="70"/><text class="label" x="35" y="100">Сатурн</text></g>
+    <g transform="translate(770 0)"><use href="#uranus" width="70" height="70"/><text class="label" x="35" y="100">Уран</text></g>
+    <g transform="translate(880 0)"><use href="#neptune" width="70" height="70"/><text class="label" x="35" y="100">Нептун</text></g>
+    <g transform="translate(990 0)"><use href="#pluto" width="70" height="70"/><text class="label" x="35" y="100">Плутон</text></g>
+  </g>
+  <g transform="translate(1130 95)">
+    <g><use href="#nodeN" width="70" height="70"/><text class="label" x="35" y="100">Сев. узел</text></g>
+    <g transform="translate(105 0)"><use href="#nodeS" width="70" height="70"/><text class="label" x="35" y="100">Юж. узел</text></g>
+    <g transform="translate(210 0)"><use href="#chiron" width="70" height="70"/><text class="label" x="35" y="100">Хирон</text></g>
+    <g transform="translate(315 0)"><use href="#fortune" width="70" height="70"/><text class="label" x="35" y="100">Фортуна</text></g>
+  </g>
+
+  <g transform="translate(40 310)">
+    <g><use href="#aries" width="70" height="70"/><text class="label" x="35" y="100">Овен</text></g>
+    <g transform="translate(135 0)"><use href="#taurus" width="70" height="70"/><text class="label" x="35" y="100">Телец</text></g>
+    <g transform="translate(270 0)"><use href="#gemini" width="70" height="70"/><text class="label" x="35" y="100">Близнецы</text></g>
+    <g transform="translate(405 0)"><use href="#cancer" width="70" height="70"/><text class="label" x="35" y="100">Рак</text></g>
+    <g transform="translate(540 0)"><use href="#leo" width="70" height="70"/><text class="label" x="35" y="100">Лев</text></g>
+    <g transform="translate(675 0)"><use href="#virgo" width="70" height="70"/><text class="label" x="35" y="100">Дева</text></g>
+    <g transform="translate(810 0)"><use href="#libra" width="70" height="70"/><text class="label" x="35" y="100">Весы</text></g>
+    <g transform="translate(945 0)"><use href="#scorpio" width="70" height="70"/><text class="label" x="35" y="100">Скорпион</text></g>
+    <g transform="translate(1080 0)"><use href="#sagittarius" width="70" height="70"/><text class="label" x="35" y="100">Стрелец</text></g>
+    <g transform="translate(1215 0)"><use href="#capricorn" width="70" height="70"/><text class="label" x="35" y="100">Козерог</text></g>
+    <g transform="translate(1350 0)"><use href="#aquarius" width="70" height="70"/><text class="label" x="35" y="100">Водолей</text></g>
+    <g transform="translate(1485 0)"><use href="#pisces" width="70" height="70"/><text class="label" x="35" y="100">Рыбы</text></g>
+  </g>
+
+  <g transform="translate(40 495)">
+    <g><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">1</text></g>
+    <g transform="translate(90 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">2</text></g>
+    <g transform="translate(180 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">3</text></g>
+    <g transform="translate(270 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">4</text></g>
+    <g transform="translate(360 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">5</text></g>
+    <g transform="translate(450 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">6</text></g>
+    <g transform="translate(540 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">7</text></g>
+    <g transform="translate(630 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">8</text></g>
+    <g transform="translate(720 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">9</text></g>
+    <g transform="translate(810 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">10</text></g>
+    <g transform="translate(900 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">11</text></g>
+    <g transform="translate(990 0)"><circle class="icon" cx="24" cy="24" r="22"/><text class="num" x="24" y="25">12</text></g>
+  </g>
+  <g transform="translate(1130 495)">
+    <g><use href="#fire" width="70" height="70"/><text class="label" x="35" y="100">Огонь</text></g>
+    <g transform="translate(110 0)"><use href="#earth" width="70" height="70"/><text class="label" x="35" y="100">Земля</text></g>
+    <g transform="translate(220 0)"><use href="#air" width="70" height="70"/><text class="label" x="35" y="100">Воздух</text></g>
+    <g transform="translate(330 0)"><use href="#water" width="70" height="70"/><text class="label" x="35" y="100">Вода</text></g>
+  </g>
+
+  <g transform="translate(40 660)">
+    <g><use href="#conj" width="70" height="70"/><text class="label" x="35" y="100">Соединение</text></g>
+    <g transform="translate(95 0)"><use href="#opp" width="70" height="70"/><text class="label" x="35" y="100">Оппозиция</text></g>
+    <g transform="translate(190 0)"><use href="#trine" width="70" height="70"/><text class="label" x="35" y="100">Трин</text></g>
+    <g transform="translate(285 0)"><use href="#square" width="70" height="70"/><text class="label" x="35" y="100">Квадрат</text></g>
+    <g transform="translate(380 0)"><use href="#sextile" width="70" height="70"/><text class="label" x="35" y="100">Секстиль</text></g>
+    <g transform="translate(475 0)"><use href="#quincunx" width="70" height="70"/><text class="label" x="35" y="100">Квинконс</text></g>
+    <g transform="translate(570 0)"><use href="#semisquare" width="70" height="70"/><text class="label" x="35" y="100">Полуквадрат</text></g>
+    <g transform="translate(665 0)"><path class="icon" d="M32 12v40M18 24l14-12l14 12"/><text class="label" x="35" y="100">Полусекстиль</text></g>
+    <g transform="translate(760 0)"><use href="#star" width="70" height="70"/><text class="label" x="35" y="100">Биквинтиль</text></g>
+  </g>
+  <g transform="translate(940 660)">
+    <g><text class="word" x="35" y="35">ASC</text><text class="label" x="35" y="100">Асцендент</text></g>
+    <g transform="translate(105 0)"><text class="word" x="35" y="35">MC</text><text class="label" x="35" y="100">Медиум</text><text class="label" x="35" y="120">Цели</text></g>
+    <g transform="translate(210 0)"><text class="word" x="35" y="35">DSC</text><text class="label" x="35" y="100">Десцендент</text></g>
+    <g transform="translate(315 0)"><text class="word" x="35" y="35">IC</text><text class="label" x="35" y="100">Имум</text><text class="label" x="35" y="120">Цели</text></g>
+    <g transform="translate(420 0)"><use href="#fortune" width="70" height="70"/><text class="label" x="35" y="100">Вертекс</text></g>
+    <g transform="translate(525 0)"><use href="#star" width="70" height="70"/><text class="label" x="35" y="100">Антарес</text></g>
+  </g>
+
+  <g transform="translate(40 860)">
+    <g><use href="#search" width="62" height="62"/><text class="label" x="31" y="92">Поиск</text></g>
+    <g transform="translate(105 0)"><use href="#plus" width="62" height="62"/><text class="label" x="31" y="92">Добавить</text></g>
+    <g transform="translate(210 0)"><use href="#edit" width="62" height="62"/><text class="label" x="31" y="92">Редакт.</text></g>
+    <g transform="translate(315 0)"><use href="#trash" width="62" height="62"/><text class="label" x="31" y="92">Удалить</text></g>
+    <g transform="translate(420 0)"><use href="#heart" width="62" height="62"/><text class="label" x="31" y="92">Избранное</text></g>
+    <g transform="translate(525 0)"><use href="#bookmark" width="62" height="62"/><text class="label" x="31" y="92">Закладка</text></g>
+    <g transform="translate(630 0)"><use href="#share" width="62" height="62"/><text class="label" x="31" y="92">Поделиться</text></g>
+    <g transform="translate(735 0)"><use href="#download" width="62" height="62"/><text class="label" x="31" y="92">Скачать</text></g>
+    <g transform="translate(840 0)"><use href="#info" width="62" height="62"/><text class="label" x="31" y="92">Инфо</text></g>
+    <g transform="translate(945 0)"><use href="#help" width="62" height="62"/><text class="label" x="31" y="92">Помощь</text></g>
+    <g transform="translate(1050 0)"><use href="#filters" width="62" height="62"/><text class="label" x="31" y="92">Фильтры</text></g>
+    <g transform="translate(1155 0)"><use href="#calendar" width="62" height="62"/><text class="label" x="31" y="92">Календарь</text></g>
+    <g transform="translate(1260 0)"><use href="#time" width="62" height="62"/><text class="label" x="31" y="92">Время</text></g>
+    <g transform="translate(1365 0)"><use href="#menu" width="62" height="62"/><text class="label" x="31" y="92">Меню</text></g>
+    <g transform="translate(1470 0)"><use href="#settings" width="62" height="62"/><text class="label" x="31" y="92">Настройки</text></g>
+  </g>
+</svg>
