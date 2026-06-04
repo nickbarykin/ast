@@ -1242,50 +1242,50 @@ Should not require rewriting the data model.
 
 ## Data Model
 
-- [ ] Define `ChartEntity`
-- [ ] Define `PointEntity`
-- [ ] Define `HouseEntity`
-- [ ] Define `SignEntity`
-- [ ] Define `AspectEntity`
-- [ ] Define `Relation`
-- [ ] Define stable ID format
-- [ ] Use `points`, not only `planets`
-- [ ] Store Ascendant as a point
-- [ ] Store MC as a point
-- [ ] Store houses as sectors
-- [ ] Store aspects as relations between points
+- [ ] Define ChartEntity
+- [x] Define PointEntity
+- [x] Define HouseEntity
+- [ ] Define SignEntity
+- [x] Define AspectEntity
+- [x] Define Relation
+- [x] Define stable ID format
+- [x] Use points, not only planets
+- [x] Store Ascendant as a point
+- [x] Store MC as a point
+- [x] Store houses as sectors
+- [x] Store aspects as relations between points
 
 ## Normalization
 
-- [ ] Create `normalizeChart(rawChart)`
-- [ ] Normalize backend planets into points
-- [ ] Normalize angles into points
-- [ ] Normalize houses
+- [x] Create normalizeChart(rawChart)
+- [x] Normalize backend planets into points
+- [x] Normalize angles into points
+- [x] Normalize houses
 - [ ] Add signs to chart
-- [ ] Assign each point to a sign
-- [ ] Assign each point to a house
-- [ ] Calculate aspects
-- [ ] Build relations
-- [ ] Return stable normalized chart object
+- [x] Assign each point to a sign
+- [x] Assign each point to a house
+- [x] Calculate aspects
+- [x] Build relations
+- [x] Return stable normalized chart object
 
 ## Coordinate Math
 
-- [ ] Create angle helpers
-- [ ] Create zodiac helpers
-- [ ] Create house helpers
-- [ ] Create aspect math helpers
-- [ ] Implement longitude → sign
-- [ ] Implement longitude → degree in sign
-- [ ] Implement longitude → house
-- [ ] Implement longitude → chart angle
+- [x] Create angle helpers
+- [x] Create zodiac helpers
+- [x] Create house helpers
+- [x] Create aspect math helpers
+- [x] Implement longitude → sign
+- [x] Implement longitude → degree in sign
+- [x] Implement longitude → house
+- [x] Implement longitude → chart angle
 - [ ] Implement chart angle → screen angle
-- [ ] Implement Ascendant-based rotation
-- [ ] Remove all magic rotation formulas
+- [x] Implement Ascendant-based rotation
+- [x] Remove all magic rotation formulas
 
 ## Selectors
 
-- [ ] Get point by ID
-- [ ] Get house by ID
+- [x] Get point by ID
+- [x] Get house by ID
 - [ ] Get sign by ID
 - [ ] Get aspect by ID
 - [ ] Get relations for entity
@@ -1295,9 +1295,9 @@ Should not require rewriting the data model.
 
 ## Scene
 
-- [ ] Create `Scene`
-- [ ] Create `Layer`
-- [ ] Create `SceneNode`
+- [ ] Create Scene
+- [ ] Create Layer
+- [ ] Create SceneNode
 - [ ] Create basic shape model
 - [ ] Connect nodes to entity IDs
 - [ ] Add layer visibility
@@ -1305,16 +1305,16 @@ Should not require rewriting the data model.
 
 ## Shapes
 
-- [ ] Create `PointShape`
-- [ ] Create `LineShape`
-- [ ] Create `SectorShape`
-- [ ] Create `TextShape`
-- [ ] Create `PathShape`
+- [ ] Create PointShape
+- [ ] Create LineShape
+- [ ] Create SectorShape
+- [ ] Create TextShape
+- [ ] Create PathShape
 - [ ] Keep shapes astrology-independent
 
 ## Layout
 
-- [ ] Create `CircularChartLayout`
+- [ ] Create CircularChartLayout
 - [ ] Calculate zodiac sector geometry
 - [ ] Calculate house sector geometry
 - [ ] Calculate point positions
@@ -1324,7 +1324,7 @@ Should not require rewriting the data model.
 
 ## SVG Renderer
 
-- [ ] Create `SvgRenderer`
+- [ ] Create SvgRenderer
 - [ ] Render layers
 - [ ] Render nodes
 - [ ] Render point shapes
@@ -1336,7 +1336,7 @@ Should not require rewriting the data model.
 
 ## Natal Chart Scene
 
-- [ ] Create `buildNatalChartScene(chart, options)`
+- [ ] Create buildNatalChartScene(chart, options)
 - [ ] Create zodiac layer
 - [ ] Create house layer
 - [ ] Create aspect layer
@@ -1350,9 +1350,9 @@ Should not require rewriting the data model.
 - [ ] Show Ascendant line
 - [ ] Show 0° Aries line
 - [ ] Show sign boundaries
-- [ ] Show house cusps
-- [ ] Show point IDs
-- [ ] Show point longitudes
+- [x] Show house cusps
+- [x] Show point IDs
+- [x] Show point longitudes
 - [ ] Show hit areas later
 
 ## Interaction
@@ -1391,11 +1391,11 @@ Should not require rewriting the data model.
 
 ## Do Not Do Yet
 
-- [ ] Do not implement CylinderLayout yet
-- [ ] Do not implement PerspectiveCamera yet
-- [ ] Do not implement WebGLRenderer yet
-- [ ] Do not implement CanvasRenderer yet
-- [ ] Do not implement full AnimationSystem yet
-- [ ] Do not implement full BehaviorSystem yet
-- [ ] Do not implement TimelineLayout yet
-- [ ] Do not implement GraphLayout yet
+- [x] Do not implement CylinderLayout yet
+- [x] Do not implement PerspectiveCamera yet
+- [x] Do not implement WebGLRenderer yet
+- [x] Do not implement CanvasRenderer yet
+- [x] Do not implement full AnimationSystem yet
+- [x] Do not implement full BehaviorSystem yet
+- [x] Do not implement TimelineLayout yet
+- [x] Do not implement GraphLayout yet
