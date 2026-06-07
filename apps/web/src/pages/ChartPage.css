@@ -1,0 +1,120 @@
+.chart-page {
+  min-height: 100vh;
+  padding: 32px;
+  background: #111;
+  color: #eee;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.chart-page__panel {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px;
+  border: 1px solid #333;
+  border-radius: 16px;
+  background: #181818;
+}
+
+.chart-page__title {
+  margin: 0 0 24px;
+  font-size: 28px;
+}
+
+.chart-page__subtitle {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.chart-page__form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.chart-page__field,
+.chart-page__field--wide {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chart-page__field--wide {
+  grid-column: 1 / -1;
+}
+
+.chart-page__label {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.chart-page__input {
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+}
+
+.chart-page__button,
+.chart-page__button-secondary {
+  grid-column: 1 / -1;
+  height: 42px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chart-page__button {
+  border: 0;
+  background: #fff;
+  color: #111;
+}
+
+.chart-page__button-secondary {
+  border: 1px solid #444;
+  background: #222;
+  color: #eee;
+}
+
+.chart-page__status {
+  margin-top: 20px;
+  color: #ccc;
+}
+
+.chart-page__error {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #3a1111;
+  color: #ffb4b4;
+  white-space: pre-wrap;
+}
+
+.chart-page__result {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: #202020;
+}
+
+.chart-page__hint {
+  color: #999;
+  font-size: 13px;
+}
+
+.chart-page__chart {
+  position: relative;
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  color: #eee;
+}
+
+text {
+    fill: #FFF;
+}

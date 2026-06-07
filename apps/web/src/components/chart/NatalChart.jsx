@@ -35,7 +35,7 @@ export default function NatalChart({ chart }) {
       <HouseRing
         center={center}
         innerRadius={180}
-        outerRadius={280}
+        outerRadius={260}
         houses={normalized.houses}
       />
 

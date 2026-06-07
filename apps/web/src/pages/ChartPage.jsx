@@ -1,8 +1,12 @@
 // src/pages/ChartPage.jsx
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
+import SvgSceneRenderer from '../components/chart/SvgSceneRenderer'
+import SceneHintCard from '../components/chart/SceneHintCard'
+import { buildNatalScene } from '../astrology/scene/buildNatalScene'
 import { fetchChartData } from '../services/api/chartApi'
+import './ChartPage.css'
 import {
   createChartModel,
   TIMEZONE_OPTIONS,
@@ -11,16 +15,42 @@ import {
 
 export default function ChartPage() {
   const [form, setForm] = useState({
-    date: '1993-11-12',
-    time: '14:35',
-    lat: '55.75',
-    lon: '37.61',
-    timezone: TimezoneId.EUROPE_MOSCOW
+    date: '1991-11-05',
+    time: '12:00',
+    lat: '56.06',
+    lon: '63.35',
+    timezone: TimezoneId.ASIA_YEKATERINBURG
   })
 
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState(null)
   const [chartModel, setChartModel] = useState(null)
+  const [hoveredNode, setHoveredNode] = useState(null)
+  const [hintPosition, setHintPosition] = useState({ x: 0, y: 0 })
+  const [hintMode] = useState('floating')
+
+  function updateHintPosition(event) {
+    const rect = event.currentTarget.ownerSVGElement.getBoundingClientRect()
+
+    setHintPosition({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    })
+  }
+
+  function handleNodeEnter(node, event) {
+    setHoveredNode(node)
+    updateHintPosition(event)
+  }
+
+  function handleNodeMove(node, event) {
+    setHoveredNode(node)
+    updateHintPosition(event)
+  }
+
+  function handleNodeLeave() {
+    setHoveredNode(null)
+  }
 
   function updateField(fieldName, value) {
     setForm((currentForm) => ({
@@ -28,6 +58,17 @@ export default function ChartPage() {
       [fieldName]: value
     }))
   }
+
+  const scene = useMemo(() => {
+    if (!chartModel) {
+      return null
+    }
+
+    return buildNatalScene(chartModel, {
+      width: 600,
+      height: 600
+    })
+  }, [chartModel])
 
   function useBrowserTimezone() {
     const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -129,59 +170,59 @@ export default function ChartPage() {
   }
 
   return (
-    <main style={styles.page}>
-      <section style={styles.panel}>
-        <h1 style={styles.title}>Natal Chart Debug</h1>
+    <main className="chart-page">
+      <section className="chart-page__panel">
+        <h1 className="chart-page__title">Natal Chart Debug</h1>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.field}>
-            <span style={styles.label}>Date</span>
+        <form onSubmit={handleSubmit} className="chart-page__form">
+          <label className="chart-page__field">
+            <span className="chart-page__label">Date</span>
             <input
               type="date"
               value={form.date}
               onChange={(event) => updateField('date', event.target.value)}
-              style={styles.input}
+              className="chart-page__input"
             />
           </label>
 
-          <label style={styles.field}>
-            <span style={styles.label}>Time</span>
+          <label className="chart-page__field">
+            <span className="chart-page__label">Time</span>
             <input
               type="time"
               value={form.time}
               onChange={(event) => updateField('time', event.target.value)}
-              style={styles.input}
+              className="chart-page__input"
             />
           </label>
 
-          <label style={styles.field}>
-            <span style={styles.label}>Latitude</span>
+          <label className="chart-page__field">
+            <span className="chart-page__label">Latitude</span>
             <input
               type="number"
               step="0.000001"
               value={form.lat}
               onChange={(event) => updateField('lat', event.target.value)}
-              style={styles.input}
+              className="chart-page__input"
             />
           </label>
 
-          <label style={styles.field}>
-            <span style={styles.label}>Longitude</span>
+          <label className="chart-page__field">
+            <span className="chart-page__label">Longitude</span>
             <input
               type="number"
               step="0.000001"
               value={form.lon}
               onChange={(event) => updateField('lon', event.target.value)}
-              style={styles.input}
+              className="chart-page__input"
             />
           </label>
 
-          <label style={styles.fieldWide}>
-            <span style={styles.label}>Timezone</span>
+          <label className="chart-page__field--wide">
+            <span className="chart-page__label">Timezone</span>
             <select
               value={form.timezone}
               onChange={(event) => updateField('timezone', event.target.value)}
-              style={styles.input}
+              className="chart-page__input"
             >
               {TIMEZONE_OPTIONS.map((timezone) => (
                 <option key={timezone.id} value={timezone.id}>
@@ -191,32 +232,32 @@ export default function ChartPage() {
             </select>
           </label>
 
-          <button type="submit" style={styles.button}>
+          <button type="submit" className="chart-page__button">
             Calculate chart
           </button>
 
           <button
             type="button"
             onClick={useBrowserTimezone}
-            style={styles.secondaryButton}
+            className="chart-page__button-secondary"
           >
             Use browser timezone
           </button>
         </form>
 
-        <div style={styles.status}>
+        <div className="chart-page__status">
           <strong>Status:</strong> {status}
         </div>
 
         {error && (
-          <pre style={styles.error}>
+          <pre className="chart-page__error">
             {error}
           </pre>
         )}
 
         {chartModel && (
-          <section style={styles.result}>
-            <h2 style={styles.subtitle}>Result</h2>
+          <section className="chart-page__result">
+            <h2 className="chart-page__subtitle">Result</h2>
 
             <p>
               <strong>Julian Day:</strong> {chartModel.meta.julianDay}
@@ -243,114 +284,29 @@ export default function ChartPage() {
               <strong>Aspects:</strong> {chartModel.aspects.length}
             </p>
 
-            <p style={styles.hint}>
+            <p className="chart-page__hint">
               Full data is printed in browser console.
             </p>
+
+            <div className="chart-page__chart">
+              <SvgSceneRenderer
+                scene={scene}
+                onNodeEnter={handleNodeEnter}
+                onNodeMove={handleNodeMove}
+                onNodeLeave={handleNodeLeave}
+              />
+
+              <SceneHintCard
+                node={hoveredNode}
+                position={hintPosition}
+                mode={hintMode}
+                fixedPosition={{ x: 16, y: 16 }}
+                offset={{ x: 14, y: 14 }}
+              />
+            </div>
           </section>
         )}
       </section>
     </main>
   )
-}
-
-const styles = {
-  page: {
-    minHeight: '100vh',
-    padding: '32px',
-    background: '#111',
-    color: '#eee',
-    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif'
-  },
-
-  panel: {
-    maxWidth: '760px',
-    margin: '0 auto',
-    padding: '24px',
-    border: '1px solid #333',
-    borderRadius: '16px',
-    background: '#181818'
-  },
-
-  title: {
-    margin: '0 0 24px',
-    fontSize: '28px'
-  },
-
-  subtitle: {
-    margin: '0 0 12px',
-    fontSize: '20px'
-  },
-
-  form: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-    gap: '16px'
-  },
-
-  field: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px'
-  },
-
-  fieldWide: {
-    gridColumn: '1 / -1',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px'
-  },
-
-  label: {
-    fontSize: '13px',
-    color: '#aaa'
-  },
-
-  input: {
-    height: '38px',
-    padding: '0 10px',
-    border: '1px solid #444',
-    borderRadius: '8px',
-    background: '#222',
-    color: '#fff',
-    fontSize: '14px'
-  },
-
-  button: {
-    gridColumn: '1 / -1',
-    height: '42px',
-    border: '0',
-    borderRadius: '10px',
-    background: '#fff',
-    color: '#111',
-    fontSize: '15px',
-    fontWeight: 600,
-    cursor: 'pointer'
-  },
-
-  status: {
-    marginTop: '20px',
-    color: '#ccc'
-  },
-
-  error: {
-    marginTop: '16px',
-    padding: '12px',
-    borderRadius: '8px',
-    background: '#3a1111',
-    color: '#ffb4b4',
-    whiteSpace: 'pre-wrap'
-  },
-
-  result: {
-    marginTop: '24px',
-    padding: '16px',
-    border: '1px solid #333',
-    borderRadius: '12px',
-    background: '#202020'
-  },
-
-  hint: {
-    color: '#999',
-    fontSize: '13px'
-  }
 }

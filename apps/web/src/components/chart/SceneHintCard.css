@@ -1,0 +1,38 @@
+.scene-hint-card {
+  position: absolute;
+  z-index: 20;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid #444;
+  border-radius: 10px;
+  background: #181818;
+  color: #eee;
+  font-size: 12px;
+  line-height: 1.35;
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+}
+
+.scene-hint-card__title {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.scene-hint-card__row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.scene-hint-card__row span {
+  color: #999;
+}
+
+.scene-hint-card__row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+}
