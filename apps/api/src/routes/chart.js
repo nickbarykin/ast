@@ -5,7 +5,6 @@ async function chartRoutes(fastify) {
   fastify.post('/chart', async (request, reply) => {
     try {
       const data = chartSchema.parse(request.body)
-
       const chart = await buildChart(data)
 
       return chart
@@ -15,7 +14,9 @@ async function chartRoutes(fastify) {
       reply.code(400)
 
       return {
-        error: 'Invalid request'
+        error: 'Invalid request',
+        message: error.message,
+        issues: error.issues ?? null
       }
     }
   })

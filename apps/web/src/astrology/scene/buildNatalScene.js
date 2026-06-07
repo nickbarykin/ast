@@ -51,6 +51,17 @@ const POINT_GLYPHS = {
   uranus: '♅',
   neptune: '♆',
   pluto: '♇',
+
+  chiron: '⚷',
+
+  northNodeMean: '☊',
+  southNodeMean: '☋',
+  northNodeTrue: '☊',
+  southNodeTrue: '☋',
+
+  lilithMean: '⚸',
+  lilithOsculating: '⚸',
+
   ascendant: 'ASC',
   descendant: 'DSC',
   mc: 'MC',

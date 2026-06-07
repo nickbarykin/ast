@@ -80,3 +80,13 @@ export const RelationType = Object.freeze({
   POINT_IN_SIGN: 'point_in_sign',
   HOUSE_IN_SIGN: 'house_in_sign'
 })
+
+export const ExtraPointId = Object.freeze({
+  CHIRON: 'chiron',
+  NORTH_NODE_MEAN: 'northNodeMean',
+  SOUTH_NODE_MEAN: 'southNodeMean',
+  NORTH_NODE_TRUE: 'northNodeTrue',
+  SOUTH_NODE_TRUE: 'southNodeTrue',
+  LILITH_MEAN: 'lilithMean',
+  LILITH_OSCULATING: 'lilithOsculating'
+})

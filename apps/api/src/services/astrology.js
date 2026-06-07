@@ -1,8 +1,15 @@
 // astrology.js
 
 const swe = require('swisseph')
+const path = require('path')
+
+swe.swe_set_ephe_path(
+  path.resolve(__dirname, '../../ephe')
+)
+
 const { DateTime } = require('luxon')
-const PLANETS = require('../constants/planets')
+const POINTS = require('../constants/points')
+
 
 function toJulianDay({ date, time, timezone }) {
 
@@ -21,26 +28,13 @@ function toJulianDay({ date, time, timezone }) {
   )
 }
 
-function calcPlanet(jd, planet) {
-
+function calcPoint(jd, pointId) {
   return new Promise((resolve, reject) => {
-
     swe.swe_calc_ut(
       jd,
-      planet,
+      pointId,
       swe.SEFLG_SWIEPH | swe.SEFLG_SPEED,
       (...args) => {
-
-        console.log('================')
-        console.log('PLANET ID:', planet)
-
-        console.dir(args, {
-          depth: null
-        })
-
-        // most wrappers return:
-        // [ result ]
-
         if (!args || !args.length) {
           reject(new Error('Empty swiss response'))
           return
@@ -50,6 +44,18 @@ function calcPlanet(jd, planet) {
       }
     )
   })
+}
+
+function normalizeLongitude(longitude) {
+  return ((longitude % 360) + 360) % 360
+}
+
+function createOppositePoint(point) {
+  return {
+    ...point,
+    longitude: normalizeLongitude(point.longitude + 180),
+    speed: point.speed == null ? point.speed : -point.speed
+  }
 }
 
 function calcHouses(jd, lat, lon) {
@@ -72,30 +78,40 @@ async function buildChart(data) {
 
   const jd = toJulianDay(data)
 
-  const planets = {}
+  console.log('POINTS CONST')
+  console.dir(POINTS)
 
-  console.log('PLANETS CONST')
-  console.dir(PLANETS)
+  const points = {}
 
-  for (const [id, planetId] of Object.entries(PLANETS)) {
-
-    console.log('ITERATION:', id, planetId)
-
-    const result = await calcPlanet(
+  for (const [id, pointConfig] of Object.entries(POINTS)) {
+    const result = await calcPoint(
       jd,
-      planetId
+      pointConfig.sweId
     )
 
-    console.log('FINAL RESULT:')
-    console.dir(result, {
-      depth: null
-    })
-
-    planets[id] = {
+    points[id] = {
       longitude: result.longitude,
       latitude: result.latitude,
       distance: result.distance,
-      speed: result.longitudeSpeed
+      speed: result.longitudeSpeed,
+      pointType: pointConfig.pointType,
+      pointGroup: pointConfig.pointGroup
+    }
+  }
+
+  if (points.northNodeMean) {
+    points.southNodeMean = {
+      ...createOppositePoint(points.northNodeMean),
+      pointType: 'calculated',
+      pointGroup: 'node'
+    }
+  }
+
+  if (points.northNodeTrue) {
+    points.southNodeTrue = {
+      ...createOppositePoint(points.northNodeTrue),
+      pointType: 'calculated',
+      pointGroup: 'node'
     }
   }
 
@@ -107,7 +123,8 @@ async function buildChart(data) {
 
   return {
     julianDay: jd,
-    planets,
+    planets: points,
+    points,
     houses
   }
 }

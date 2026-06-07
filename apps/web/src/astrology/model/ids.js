@@ -1,6 +1,11 @@
 // src/astrology/model/ids.js
 
-import { PlanetId, AngleId, SignId } from './enums'
+import {
+  PlanetId,
+  AngleId,
+  SignId,
+  ExtraPointId
+} from './enums'
 
 export const PLANET_IDS = Object.freeze([
   PlanetId.SUN,
@@ -59,3 +64,18 @@ export function createAspectId(pointAId, pointBId, aspectType) {
 export function createRelationId(type, sourceId, targetId) {
   return `relation:${type}:${sourceId}:${targetId}`
 }
+
+export const EXTRA_POINT_IDS = Object.freeze([
+  ExtraPointId.CHIRON,
+  ExtraPointId.NORTH_NODE_MEAN,
+  ExtraPointId.SOUTH_NODE_MEAN,
+  ExtraPointId.NORTH_NODE_TRUE,
+  ExtraPointId.SOUTH_NODE_TRUE,
+  ExtraPointId.LILITH_MEAN,
+  ExtraPointId.LILITH_OSCULATING
+])
+
+export const CALCULATED_POINT_IDS = Object.freeze([
+  ...PLANET_IDS,
+  ...EXTRA_POINT_IDS
+])

@@ -10,7 +10,7 @@ import {
 
 import {
   CHART_ID,
-  PLANET_IDS,
+  CALCULATED_POINT_IDS,
   createPointId,
   createSignId
 } from './ids'
@@ -31,6 +31,7 @@ import {
 
 import { createSignModel } from './signs'
 import { createAspectModel } from './aspects'
+import { POINT_DEFINITIONS } from './pointDefinitions'
 
 import {
   createPointSignRelation,
@@ -61,6 +62,18 @@ function createChartEntity(rawChart, options, ascendantLongitude, mcLongitude) {
 function createPlanetPoint(planetId, rawPlanet, ascendantLongitude, houses) {
   assertPlanetData(rawPlanet, planetId)
 
+  const definition = POINT_DEFINITIONS[planetId] || {}
+
+  const pointType =
+    rawPlanet.pointType ||
+    definition.pointType ||
+    PointType.PLANET
+
+  const pointGroup =
+    rawPlanet.pointGroup ||
+    definition.pointGroup ||
+    'planet'
+
   const longitude = normalizeDegrees(rawPlanet.longitude)
   const zodiacPosition = getZodiacPosition(longitude)
   const house = findHouseByLongitude(longitude, houses)
@@ -72,7 +85,8 @@ function createPlanetPoint(planetId, rawPlanet, ascendantLongitude, houses) {
     id: planetId,
     entityId: createPointId(planetId),
     type: EntityType.POINT,
-    pointType: PointType.PLANET,
+    pointType,
+    pointGroup,
 
     longitude,
     latitude: rawPlanet.latitude,
@@ -115,6 +129,7 @@ function createAnglePoint(angleId, longitude, ascendantLongitude, houses) {
     entityId: createPointId(angleId),
     type: EntityType.POINT,
     pointType: PointType.ANGLE,
+    pointGroup: 'angle',
 
     longitude: normalizedLongitude,
 
@@ -194,7 +209,7 @@ export function normalizeChartData(rawChart, options = {}) {
 
   const points = {}
 
-  PLANET_IDS.forEach((planetId) => {
+  CALCULATED_POINT_IDS.forEach((planetId) => {
     if (!rawChart.planets[planetId]) {
       return
     }
