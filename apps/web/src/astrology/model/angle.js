@@ -1,15 +1,12 @@
 // src/astrology/model/angle.js
 
 export function normalizeDegrees(value) {
-  const result = value % 360
-
-  if (result < 0) {
-    return result + 360
-  }
-
-  return result
+  return ((value % 360) + 360) % 360;
 }
 
+export function oppositeLongitude(longitude) {
+  return normalizeDegrees(longitude + 180);
+}
 export function getClockwiseDistance(from, to) {
   return normalizeDegrees(to - from)
 }
@@ -28,8 +25,8 @@ export function rotateLongitude(longitude, originLongitude) {
   return normalizeDegrees(longitude - originLongitude)
 }
 
-export function longitudeToChartAngle(longitude, ascendantLongitude = 0) {
-  return normalizeDegrees(180 - rotateLongitude(longitude, ascendantLongitude))
+export function longitudeToChartAngle(longitude, chart) {
+  return normalizeDegrees(longitude - chart.ascendantLongitude + 180);
 }
 
 /**

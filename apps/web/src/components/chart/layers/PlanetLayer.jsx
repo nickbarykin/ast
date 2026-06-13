@@ -1,9 +1,7 @@
 // PlanetLayer.jsx
 
 import { polarToCartesian } from '../../../astrology/geometry/polar'
-
 import { PLANETS } from '../../../astrology/constants/planets'
-
 import { rotateAngle } from '../../../astrology/geometry/rotation'
 
 export default function PlanetLayer({
@@ -40,7 +38,7 @@ export default function PlanetLayer({
           angle
         )
 
-        const meta = PLANETS[planet.id]
+        const meta = PLANETS[planet.key]
 
         return (
           <g key={planet.id}>

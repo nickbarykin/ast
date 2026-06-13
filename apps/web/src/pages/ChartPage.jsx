@@ -265,8 +265,8 @@ export default function ChartPage() {
 
             <p>
               <strong>ASC:</strong>{' '}
-              {chartModel.points.ascendant.longitude.toFixed(3)}°{' '}
-              {chartModel.points.ascendant.signId}
+              {chartModel.angles.ascendant.longitude.toFixed(3)}°{' '}
+              {chartModel.angles.ascendant.signId}
             </p>
 
             <p>

@@ -1,5 +1,3 @@
-// src/astrology/model/createChartModel.js
-
 import { normalizeChartData } from './normalizeChartData'
 
 export function createChartModel(rawChart, options = {}) {
@@ -21,7 +19,15 @@ export function createChartModel(rawChart, options = {}) {
     },
 
     getAngles() {
-      return Object.values(model.points).filter((point) => point.type === 'angle')
+      return model.angles ? Object.values(model.angles) : []
+    },
+
+    getSensitivePoints() {
+      return model.sensitivePoints ? Object.values(model.sensitivePoints) : []
+    },
+
+    getRenderablePoints() {
+      return Object.values(model.points)
     }
   }
 }

@@ -241,7 +241,7 @@ export default function SvgSceneRenderer({
                 onNodeMove,
                 onNodeLeave
               })
-)}
+            )}
           </g>
         );
       })}

@@ -37,7 +37,9 @@ const LAYER_ID = {
   HOUSE_LABELS: 'layer:house-labels',
   POINT_ANCHORS: 'layer:point-anchors',
   ASPECTS: 'layer:aspects',
-  POINTS: 'layer:points'
+  POINTS: 'layer:points',
+  ANGLES: 'layer:angles',
+  ANGLE_LABELS: 'layer:angle-labels',
 }
 
 const POINT_GLYPHS = {
@@ -82,7 +84,7 @@ export function buildNatalScene(chart, options = {}) {
     y: height / 2
   }
 
-  const ascendant = chart.points.ascendant
+  const ascendant = chart.angles.ascendant
 
   const rotation = getRotationForLongitudeAtScreenAngle(
     ascendant.longitude,
@@ -100,6 +102,16 @@ export function buildNatalScene(chart, options = {}) {
   const housesLayer = createLayer({
     id: LAYER_ID.HOUSES,
     name: 'Houses'
+  })
+
+  const anglesLayer = createLayer({
+    id: LAYER_ID.ANGLES,
+    name: 'Angles'
+  })
+
+  const angleLabelsLayer = createLayer({
+    id: LAYER_ID.ANGLE_LABELS,
+    name: 'Angle Labels'
   })
 
   const aspectsLayer = createLayer({
@@ -179,6 +191,75 @@ export function buildNatalScene(chart, options = {}) {
     )
   })
 
+  const angleAxes = [
+    [chart.angles.ascendant, chart.angles.descendant],
+    [chart.angles.mc, chart.angles.ic]
+  ]
+
+  angleAxes.forEach(([from, to]) => {
+    const fromPosition = polarToCartesian(
+      center.x,
+      center.y,
+      300,
+      longitudeToScreenAngle(from.longitude, rotation)
+    )
+
+    const toPosition = polarToCartesian(
+      center.x,
+      center.y,
+      300,
+      longitudeToScreenAngle(to.longitude, rotation)
+    )
+
+    anglesLayer.nodes.push(
+      createSceneNode({
+        id: `node:angle-axis:${from.id}:${to.id}`,
+        entityId: from.entityId,
+        layerId: LAYER_ID.ANGLES,
+        semantic: {
+          role: 'angle-axis',
+          label: `${from.id} - ${to.id}`,
+          kind: 'angle-axis'
+        },
+        shape: {
+          type: 'line',
+          x1: fromPosition.x,
+          y1: fromPosition.y,
+          x2: toPosition.x,
+          y2: toPosition.y
+        }
+      })
+    )
+  })
+
+  Object.values(chart.angles).forEach((angle) => {
+    const position = polarToCartesian(
+      center.x,
+      center.y,
+      318,
+      longitudeToScreenAngle(angle.longitude, rotation)
+    )
+
+    angleLabelsLayer.nodes.push(
+      createSceneNode({
+        id: `node:angle-label:${angle.id}`,
+        entityId: angle.entityId,
+        layerId: LAYER_ID.ANGLE_LABELS,
+        semantic: {
+          role: 'angle-label',
+          label: angle.id,
+          kind: 'angle'
+        },
+        shape: glyphShape({
+          glyphId: POINT_GLYPHS[angle.id] ?? angle.id,
+          x: position.x,
+          y: position.y,
+          size: 12
+        })
+      })
+    )
+  })
+
   const visualPoints = Object.values(chart.points)
     .map((point) => {
       const angle = longitudeToScreenAngle(point.longitude, rotation)
@@ -187,6 +268,9 @@ export function buildNatalScene(chart, options = {}) {
         ...point,
         screenAngle: angle
       }
+    })
+    .filter((point) => {
+      return point.visibleByDefault !== false
     })
 
   const laidOutPoints = layoutPlanetLanes(visualPoints, {
@@ -327,6 +411,8 @@ export function buildNatalScene(chart, options = {}) {
     zodiacLayer,
     housesLayer,
     houseLabelsLayer,
+    anglesLayer,
+    angleLabelsLayer,
     pointAnchorsLayer,
     aspectsLayer,
     pointsLayer

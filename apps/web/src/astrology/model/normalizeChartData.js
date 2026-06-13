@@ -17,6 +17,7 @@ import {
 
 import { assertRawChartData, assertPlanetData } from './validators'
 import { getZodiacPosition } from './zodiac'
+import { calculateAvestanGlobaProserpina } from '../points/proserpina'
 
 import {
   longitudeToChartAngle,
@@ -74,6 +75,11 @@ function createPlanetPoint(planetId, rawPlanet, ascendantLongitude, houses) {
     definition.pointGroup ||
     'planet'
 
+  const visibleByDefault =
+    rawPlanet.visibleByDefault ??
+    definition.visibleByDefault ??
+    true
+
   const longitude = normalizeDegrees(rawPlanet.longitude)
   const zodiacPosition = getZodiacPosition(longitude)
   const house = findHouseByLongitude(longitude, houses)
@@ -87,6 +93,7 @@ function createPlanetPoint(planetId, rawPlanet, ascendantLongitude, houses) {
     type: EntityType.POINT,
     pointType,
     pointGroup,
+    visibleByDefault,
 
     longitude,
     latitude: rawPlanet.latitude,
@@ -206,8 +213,9 @@ export function normalizeChartData(rawChart, options = {}) {
 
   const signs = createSignModel()
   const houses = createHouseModel(houseCusps)
-
   const points = {}
+  const angles = {}
+  const sensitivePoints = {}
 
   CALCULATED_POINT_IDS.forEach((planetId) => {
     if (!rawChart.planets[planetId]) {
@@ -222,28 +230,36 @@ export function normalizeChartData(rawChart, options = {}) {
     )
   })
 
-  points[AngleId.ASCENDANT] = createAnglePoint(
+  const proserpinaRaw = calculateAvestanGlobaProserpina(rawChart.julianDay)
+  points.proserpina = createPlanetPoint(
+    'proserpina',
+    proserpinaRaw,
+    ascendantLongitude,
+    houses
+  )
+
+  angles[AngleId.ASCENDANT] = createAnglePoint(
     AngleId.ASCENDANT,
     ascendantLongitude,
     ascendantLongitude,
     houses
   )
 
-  points[AngleId.DESCENDANT] = createAnglePoint(
+  angles[AngleId.DESCENDANT] = createAnglePoint(
     AngleId.DESCENDANT,
     ascendantLongitude + 180,
     ascendantLongitude,
     houses
   )
 
-  points[AngleId.MC] = createAnglePoint(
+  angles[AngleId.MC] = createAnglePoint(
     AngleId.MC,
     mcLongitude,
     ascendantLongitude,
     houses
   )
 
-  points[AngleId.IC] = createAnglePoint(
+  angles[AngleId.IC] = createAnglePoint(
     AngleId.IC,
     mcLongitude + 180,
     ascendantLongitude,
@@ -251,7 +267,7 @@ export function normalizeChartData(rawChart, options = {}) {
   )
 
   if (typeof rawChart.houses.vertex === 'number') {
-    points[AngleId.VERTEX] = createAnglePoint(
+    sensitivePoints[AngleId.VERTEX] = createAnglePoint(
       AngleId.VERTEX,
       rawChart.houses.vertex,
       ascendantLongitude,
@@ -259,8 +275,21 @@ export function normalizeChartData(rawChart, options = {}) {
     )
   }
 
-  const aspects = createAspectModel(points)
-  const relations = createRelations(points, houses, signs, aspects)
+  const aspectPoints = {
+    ...points,
+    [AngleId.ASCENDANT]: angles[AngleId.ASCENDANT],
+    [AngleId.MC]: angles[AngleId.MC],
+    ...sensitivePoints
+  }
+
+  const aspects = createAspectModel(aspectPoints)
+  const relationPoints = {
+    ...points,
+    ...angles,
+    ...sensitivePoints
+  }
+
+  const relations = createRelations(relationPoints, houses, signs, aspects)
 
   return {
     id: chart.id,
@@ -280,6 +309,8 @@ export function normalizeChartData(rawChart, options = {}) {
 
     signs,
     points,
+    angles,
+    sensitivePoints,
     houses,
     aspects,
     relations,

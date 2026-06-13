@@ -98,31 +98,44 @@ export const POINT_DEFINITIONS = {
 
   northNodeMean: {
     pointType: POINT_TYPE.CALCULATED,
-    pointGroup: POINT_GROUP.NODE
+    pointGroup: POINT_GROUP.NODE,
+    visibleByDefault: false
   },
 
   southNodeMean: {
     pointType: POINT_TYPE.CALCULATED,
-    pointGroup: POINT_GROUP.NODE
+    pointGroup: POINT_GROUP.NODE,
+    visibleByDefault: false
   },
 
   northNodeTrue: {
     pointType: POINT_TYPE.CALCULATED,
-    pointGroup: POINT_GROUP.NODE
+    pointGroup: POINT_GROUP.NODE,
+    visibleByDefault: true
   },
 
   southNodeTrue: {
     pointType: POINT_TYPE.CALCULATED,
-    pointGroup: POINT_GROUP.NODE
+    pointGroup: POINT_GROUP.NODE,
+    visibleByDefault: true
   },
 
   lilithMean: {
     pointType: POINT_TYPE.CALCULATED,
-    pointGroup: POINT_GROUP.FICTIONAL
+    pointGroup: POINT_GROUP.FICTIONAL,
+    visibleByDefault: true
   },
 
   lilithOsculating: {
     pointType: POINT_TYPE.CALCULATED,
-    pointGroup: POINT_GROUP.FICTIONAL
+    pointGroup: POINT_GROUP.FICTIONAL,
+    visibleByDefault: false
+  },
+  
+  proserpina: {
+    pointType: POINT_TYPE.CALCULATED,
+    pointGroup: POINT_GROUP.FICTIONAL,
+    visibleByDefault: true,
+    calculationMethod: 'avestan_globa'
   }
 }

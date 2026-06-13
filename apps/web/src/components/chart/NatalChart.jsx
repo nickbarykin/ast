@@ -4,16 +4,15 @@ import ZodiacRing from './layers/ZodiacRing'
 import HouseRing from './layers/HouseRing'
 import PlanetLayer from './layers/PlanetLayer'
 import AspectLayer from './layers/AspectLayer'
+import AngleAxisLayer from './layers/AngleAxisLayer'
 
 export default function NatalChart({ chart }) {
-
   const normalized = normalizeChart(chart)
 
   const size = 800
   const center = size / 2
 
-  const rotation =
-    90-chart.houses.ascendant
+  const rotation = 90 - chart.houses.ascendant
 
   return (
     <svg
@@ -24,7 +23,6 @@ export default function NatalChart({ chart }) {
         background: '#111'
       }}
     >
-
       <ZodiacRing
         center={center}
         innerRadius={300}
@@ -39,20 +37,26 @@ export default function NatalChart({ chart }) {
         houses={normalized.houses}
       />
 
+      <AngleAxisLayer
+        center={center}
+        radius={300}
+        angles={normalized.angles}
+        rotation={rotation}
+      />
+
       <AspectLayer
         center={center}
         radius={160}
-        planets={normalized.planets}
+        planets={Object.values(normalized.points)}
         rotation={rotation}
       />
 
       <PlanetLayer
         center={center}
         radius={230}
-        planets={normalized.planets}
+        planets={Object.values(normalized.points)}
         rotation={rotation}
       />
-
     </svg>
   )
 }
