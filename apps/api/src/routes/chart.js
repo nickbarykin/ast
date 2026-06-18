@@ -1,23 +1,28 @@
 const chartSchema = require('../schemas/chartSchema')
 const { buildChart } = require('../services/astrology')
+const { createChartModel } = require('../models/chart/createChartModel')
+
+function handleChartError(reply, error) {
+  console.error(error)
+
+  reply.code(400)
+
+  return {
+    error: 'Invalid request',
+    message: error.message,
+    issues: error.issues ?? null
+  }
+}
 
 async function chartRoutes(fastify) {
-  fastify.post('/chart', async (request, reply) => {
+  fastify.post('/chart/normalized', async (request, reply) => {
     try {
       const data = chartSchema.parse(request.body)
-      const chart = await buildChart(data)
+      const rawChart = await buildChart(data)
 
-      return chart
+      return createChartModel(rawChart)
     } catch (error) {
-      console.error(error)
-
-      reply.code(400)
-
-      return {
-        error: 'Invalid request',
-        message: error.message,
-        issues: error.issues ?? null
-      }
+      return handleChartError(reply, error)
     }
   })
 }

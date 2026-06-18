@@ -1,0 +1,97 @@
+.natal-chart-renderer {
+  overflow: visible;
+}
+
+.chart-anim-enter-fade,
+.chart-anim-enter-pop {
+  animation-duration: var(--chart-enter-duration, 220ms);
+  animation-fill-mode: both;
+  animation-timing-function: ease-out;
+}
+
+.chart-anim-enter-fade {
+  animation-name: chart-enter-fade;
+}
+
+.chart-anim-enter-pop {
+  animation-name: chart-enter-pop;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.chart-anim-hover-brighten,
+.chart-anim-hover-point,
+.chart-anim-hover-halo,
+.chart-anim-hover-aspect {
+  transition:
+    opacity var(--chart-hover-duration, 160ms) ease,
+    stroke var(--chart-hover-duration, 160ms) ease,
+    fill var(--chart-hover-duration, 160ms) ease,
+    transform var(--chart-hover-duration, 160ms) ease;
+}
+
+.chart-point {
+  cursor: default;
+}
+
+.chart-point__halo {
+  stroke-width: 1;
+}
+
+.chart-point:hover .chart-point__halo {
+  opacity: 1;
+  stroke-width: 2;
+}
+
+.chart-point:hover .chart-point__glyph {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(1.08);
+}
+
+.chart-aspect-line {
+  stroke-width: 1;
+}
+
+.chart-aspect-line:hover {
+  opacity: 0.8;
+}
+
+.chart-layout-handles {
+  touch-action: none;
+}
+
+.chart-layout-guide {
+  fill: none;
+  stroke: rgba(217, 199, 121, 0.35);
+  stroke-dasharray: 4 6;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.chart-layout-hit {
+  fill: transparent;
+  pointer-events: all;
+  cursor: ew-resize;
+}
+
+.chart-layout-handle {
+  fill: #d9c779;
+  stroke: #111318;
+  stroke-width: 2;
+  pointer-events: all;
+  cursor: ew-resize;
+}
+
+@keyframes chart-enter-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes chart-enter-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}

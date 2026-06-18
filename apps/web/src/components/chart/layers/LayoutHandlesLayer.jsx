@@ -1,0 +1,64 @@
+/**
+ * Renders editor handles for resizing the house ring.
+ * It receives pointer handlers from the page because layout state lives there.
+ */
+export default function LayoutHandlesLayer({
+  layout,
+  houseRing,
+  handlePositions,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp
+}) {
+  return (
+    <g
+      data-layer-id="layout-handles"
+      className="chart-layout-handles"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+    >
+      <circle
+        className="chart-layout-guide"
+        cx={layout.center.x}
+        cy={layout.center.y}
+        r={houseRing.innerRadius}
+      />
+      <circle
+        className="chart-layout-guide"
+        cx={layout.center.x}
+        cy={layout.center.y}
+        r={houseRing.outerRadius}
+      />
+      <circle
+        className="chart-layout-hit"
+        data-handle="innerRadius"
+        cx={handlePositions.innerRadius.x}
+        cy={handlePositions.innerRadius.y}
+        r="18"
+      />
+      <circle
+        className="chart-layout-handle"
+        data-handle="innerRadius"
+        cx={handlePositions.innerRadius.x}
+        cy={handlePositions.innerRadius.y}
+        r="6"
+      />
+      <circle
+        className="chart-layout-hit"
+        data-handle="outerRadius"
+        cx={handlePositions.outerRadius.x}
+        cy={handlePositions.outerRadius.y}
+        r="18"
+      />
+      <circle
+        className="chart-layout-handle"
+        data-handle="outerRadius"
+        cx={handlePositions.outerRadius.x}
+        cy={handlePositions.outerRadius.y}
+        r="6"
+      />
+    </g>
+  )
+}

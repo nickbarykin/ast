@@ -1,0 +1,40 @@
+export const SIGN_GLYPHS = {
+  aries: '♈',
+  taurus: '♉',
+  gemini: '♊',
+  cancer: '♋',
+  leo: '♌',
+  virgo: '♍',
+  libra: '♎',
+  scorpio: '♏',
+  sagittarius: '♐',
+  capricorn: '♑',
+  aquarius: '♒',
+  pisces: '♓'
+}
+
+export const POINT_GLYPHS = {
+  sun: '☉',
+  moon: '☽',
+  mercury: '☿',
+  venus: '♀',
+  mars: '♂',
+  jupiter: '♃',
+  saturn: '♄',
+  uranus: '♅',
+  neptune: '♆',
+  pluto: '♇',
+  chiron: '⚷',
+  northNodeMean: '☊',
+  southNodeMean: '☋',
+  northNodeTrue: '☊',
+  southNodeTrue: '☋',
+  lilithMean: '⚸',
+  lilithOsculating: '⚸',
+  proserpina: 'Pr',
+  vertex: 'Vx',
+  ascendant: 'ASC',
+  descendant: 'DSC',
+  mc: 'MC',
+  ic: 'IC'
+}

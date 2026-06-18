@@ -2,8 +2,8 @@
 
 const API_URL = 'http://localhost:3000'
 
-export async function fetchChartData(input) {
-  const response = await fetch(`${API_URL}/api/chart`, {
+async function postChart(endpoint, input) {
+  const response = await fetch(`${API_URL}${endpoint}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -18,4 +18,8 @@ export async function fetchChartData(input) {
   }
 
   return response.json()
+}
+
+export async function fetchNormalizedChartData(input) {
+  return postChart('/api/chart/normalized', input)
 }

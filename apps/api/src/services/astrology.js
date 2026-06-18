@@ -9,6 +9,9 @@ swe.swe_set_ephe_path(
 
 const { DateTime } = require('luxon')
 const POINTS = require('../constants/points')
+const {
+  calculateAvestanGlobaProserpina
+} = require('./proserpina')
 
 
 function toJulianDay({ date, time, timezone }) {
@@ -78,9 +81,6 @@ async function buildChart(data) {
 
   const jd = toJulianDay(data)
 
-  console.log('POINTS CONST')
-  console.dir(POINTS)
-
   const points = {}
 
   for (const [id, pointConfig] of Object.entries(POINTS)) {
@@ -114,6 +114,8 @@ async function buildChart(data) {
       pointGroup: 'node'
     }
   }
+
+  points.proserpina = calculateAvestanGlobaProserpina(jd)
 
   const houses = await calcHouses(
     jd,
