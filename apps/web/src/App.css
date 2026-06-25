@@ -1,0 +1,29 @@
+.app-nav {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 20;
+  display: flex;
+  gap: 6px;
+  border: 1px solid #343d48;
+  border-radius: 6px;
+  padding: 6px;
+  background: rgba(23, 27, 33, 0.92);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.app-nav button {
+  height: 28px;
+  border: 1px solid #3b4652;
+  border-radius: 5px;
+  background: #222932;
+  color: #eef2f7;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.app-nav button:hover {
+  border-color: #657486;
+}
