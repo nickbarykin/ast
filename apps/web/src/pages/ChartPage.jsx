@@ -7,6 +7,7 @@ import ChartHintCard from '../components/chart/ChartHintCard'
 import { buildNatalLayout } from '../astrology/layout/buildNatalLayout'
 import { RING_ID } from '../astrology/layout/rings'
 import { fetchNormalizedChartData } from '../services/api/chartApi'
+import { LOCALE_CODES, useI18n } from '../i18n'
 import './ChartPage.css'
 import {
   createChartAccessModel,
@@ -36,6 +37,7 @@ function clamp(value, min, max) {
 }
 
 export default function ChartPage() {
+  const { i18n, localeCode, setLocale } = useI18n()
   const [form, setForm] = useState({
     date: '1991-11-05',
     time: '12:00',
@@ -211,6 +213,12 @@ export default function ChartPage() {
     updateField('timezone', browserTimezone)
   }
 
+  function toggleLocale() {
+    setLocale(localeCode === LOCALE_CODES.EN
+      ? LOCALE_CODES.RU
+      : LOCALE_CODES.EN)
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -242,18 +250,30 @@ export default function ChartPage() {
 
   return (
     <main className="chart-page">
+      <div className="chart-page__locale-switcher">
+        <span>{i18n.ui('lblLanguage')}</span>
+        <button
+          type="button"
+          onClick={toggleLocale}
+          className="chart-page__locale-button"
+          aria-label={i18n.ui('lblLanguage')}
+        >
+          {localeCode.toUpperCase()}
+        </button>
+      </div>
+
       <section className="chart-page__workspace">
         <aside className="chart-page__sidebar">
           <header className="chart-page__header">
-            <h1 className="chart-page__title">Natal Chart</h1>
+            <h1 className="chart-page__title">{i18n.ui('lblNatalChart')}</h1>
             <div className={`chart-page__status chart-page__status--${status}`}>
-              {status}
+              {i18n.status(status)}
             </div>
           </header>
 
           <form onSubmit={handleSubmit} className="chart-page__form">
             <label className="chart-page__field">
-              <span className="chart-page__label">Date</span>
+              <span className="chart-page__label">{i18n.ui('lblDate')}</span>
               <input
                 type="date"
                 value={form.date}
@@ -263,7 +283,7 @@ export default function ChartPage() {
             </label>
 
             <label className="chart-page__field">
-              <span className="chart-page__label">Time</span>
+              <span className="chart-page__label">{i18n.ui('lblTime')}</span>
               <input
                 type="time"
                 value={form.time}
@@ -273,7 +293,7 @@ export default function ChartPage() {
             </label>
 
             <label className="chart-page__field">
-              <span className="chart-page__label">Latitude</span>
+              <span className="chart-page__label">{i18n.ui('lblLatitude')}</span>
               <input
                 type="number"
                 step="0.000001"
@@ -284,7 +304,7 @@ export default function ChartPage() {
             </label>
 
             <label className="chart-page__field">
-              <span className="chart-page__label">Longitude</span>
+              <span className="chart-page__label">{i18n.ui('lblLongitude')}</span>
               <input
                 type="number"
                 step="0.000001"
@@ -295,7 +315,7 @@ export default function ChartPage() {
             </label>
 
             <label className="chart-page__field chart-page__field--wide">
-              <span className="chart-page__label">Timezone</span>
+              <span className="chart-page__label">{i18n.ui('lblTimezone')}</span>
               <select
                 value={form.timezone}
                 onChange={(event) => updateField('timezone', event.target.value)}
@@ -315,7 +335,7 @@ export default function ChartPage() {
                 className="chart-page__button chart-page__button--primary"
                 disabled={status === 'loading'}
               >
-                Calculate
+                {i18n.ui('lblCalculate')}
               </button>
 
               <button
@@ -323,7 +343,7 @@ export default function ChartPage() {
                 onClick={useBrowserTimezone}
                 className="chart-page__button"
               >
-                Browser TZ
+                {i18n.ui('lblBrowserTimezone')}
               </button>
             </div>
           </form>
@@ -337,36 +357,42 @@ export default function ChartPage() {
           {chartSummary && (
             <section className="chart-page__summary">
               <div>
-                <span>JD</span>
+                <span>{i18n.ui('lblJulianDay')}</span>
                 <strong>{chartSummary.julianDay.toFixed(5)}</strong>
               </div>
               <div>
-                <span>ASC</span>
+                <span>{i18n.ui('lblAscendantShort')}</span>
                 <strong>
-                  {formatDegree(chartSummary.ascendant.longitude)}°{' '}
-                  {chartSummary.ascendant.signId}
+                  {i18n.message('degreeInSign', {
+                    degree: formatDegree(chartSummary.ascendant.longitude),
+                    signId: chartSummary.ascendant.signId
+                  })}
                 </strong>
               </div>
               <div>
-                <span>Sun</span>
+                <span>{i18n.point('sun')}</span>
                 <strong>
-                  {formatDegree(chartSummary.sun.longitude)}°{' '}
-                  {chartSummary.sun.signId}
+                  {i18n.message('degreeInSign', {
+                    degree: formatDegree(chartSummary.sun.longitude),
+                    signId: chartSummary.sun.signId
+                  })}
                 </strong>
               </div>
               <div>
-                <span>Moon</span>
+                <span>{i18n.point('moon')}</span>
                 <strong>
-                  {formatDegree(chartSummary.moon.longitude)}°{' '}
-                  {chartSummary.moon.signId}
+                  {i18n.message('degreeInSign', {
+                    degree: formatDegree(chartSummary.moon.longitude),
+                    signId: chartSummary.moon.signId
+                  })}
                 </strong>
               </div>
               <div>
-                <span>Houses</span>
+                <span>{i18n.ui('lblHouses')}</span>
                 <strong>{chartSummary.housesCount}</strong>
               </div>
               <div>
-                <span>Aspects</span>
+                <span>{i18n.ui('lblAspects')}</span>
                 <strong>{chartSummary.aspectsCount}</strong>
               </div>
             </section>
@@ -374,23 +400,23 @@ export default function ChartPage() {
 
           <section className="chart-page__layout-panel">
             <div className="chart-page__section-head">
-              <h2 className="chart-page__subtitle">Layout</h2>
+              <h2 className="chart-page__subtitle">{i18n.ui('lblLayout')}</h2>
               <button
                 type="button"
                 onClick={resetLayout}
                 className="chart-page__text-button"
               >
-                Reset
+                {i18n.ui('lblReset')}
               </button>
             </div>
 
             <div className="chart-page__layout-readout">
               <div>
-                <span>House inner</span>
+                <span>{i18n.ui('lblHouseInner')}</span>
                 <strong>{Math.round(houseRing.innerRadius)}</strong>
               </div>
               <div>
-                <span>House outer</span>
+                <span>{i18n.ui('lblHouseOuter')}</span>
                 <strong>{Math.round(houseRing.outerRadius)}</strong>
               </div>
             </div>
@@ -403,6 +429,7 @@ export default function ChartPage() {
               <>
                 <NatalChartRenderer
                   layout={layout}
+                  i18n={i18n}
                   handlers={{
                     onNodeEnter: handleNodeEnter,
                     onNodeMove: handleNodeMove,
@@ -420,6 +447,7 @@ export default function ChartPage() {
                 <ChartHintCard
                   node={hoveredNode}
                   chartModel={chartModel}
+                  i18n={i18n}
                   position={hintPosition}
                   mode={hintMode}
                   fixedPosition={{ x: 16, y: 16 }}
@@ -429,7 +457,7 @@ export default function ChartPage() {
               </>
             ) : (
               <div className="chart-page__empty">
-                <span>Ready</span>
+                <span>{i18n.ui('lblReady')}</span>
               </div>
             )}
           </div>

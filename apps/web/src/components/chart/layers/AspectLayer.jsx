@@ -11,7 +11,7 @@ function createAnchorMap(points) {
  * Renders aspect lines between point anchors inside the house ring.
  * Aspect geometry intentionally depends on PointLayer layout, not raw points.
  */
-export default function AspectLayer({ layout, animation, handlers }) {
+export default function AspectLayer({ layout, i18n, animation, handlers }) {
   const anchorByPointId = createAnchorMap(layout.points)
 
   return (
@@ -31,7 +31,11 @@ export default function AspectLayer({ layout, animation, handlers }) {
           relationId: aspect.id,
           role: 'aspect-line',
           kind: 'aspect',
-          label: `${aspect.pointAId} ${aspect.aspectType} ${aspect.pointBId}`,
+          label: i18n.message('aspectLabel', {
+            pointAId: aspect.pointAId,
+            aspectType: aspect.aspectType,
+            pointBId: aspect.pointBId
+          }),
           data: {
             ringId: item.ringId,
             aspectType: aspect.aspectType,

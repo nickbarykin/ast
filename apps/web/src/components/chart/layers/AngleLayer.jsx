@@ -7,7 +7,7 @@ import { getAnimationProps } from '../animation/chartAnimations'
  * Renders ASC/DSC and MC/IC axes plus labels outside the zodiac ring.
  * The actual offset from the zodiac ring is controlled by layout/rings.
  */
-export default function AngleLayer({ layout, animation, handlers }) {
+export default function AngleLayer({ layout, i18n, animation, handlers }) {
   return (
     <g data-layer-id="angles">
       {layout.angles.axes.map((item) => {
@@ -16,7 +16,10 @@ export default function AngleLayer({ layout, animation, handlers }) {
           entityId: item.from.entityId,
           role: 'angle-axis',
           kind: 'angle-axis',
-          label: `${item.from.id} - ${item.to.id}`,
+          label: i18n.message('angleAxisLabel', {
+            fromId: item.from.id,
+            toId: item.to.id
+          }),
           data: { ringId: item.ringId }
         })
 
@@ -42,7 +45,7 @@ export default function AngleLayer({ layout, animation, handlers }) {
           entityId: angle.entityId,
           role: 'angle-label',
           kind: 'angle',
-          label: angle.id,
+          label: i18n.point(angle.id),
           data: { ringId: item.ringId }
         })
 

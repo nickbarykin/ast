@@ -15,6 +15,7 @@ import LayoutHandlesLayer from './layers/LayoutHandlesLayer'
  */
 export default function NatalChartRenderer({
   layout,
+  i18n,
   animation,
   handlers,
   editor
@@ -28,26 +29,31 @@ export default function NatalChartRenderer({
     >
       <AspectLayer
         layout={layout}
+        i18n={i18n}
         animation={animation}
         handlers={handlers}
       />
       <HouseLayer
         layout={layout}
+        i18n={i18n}
         animation={animation}
         handlers={handlers}
       />
       <ZodiacLayer
         layout={layout}
+        i18n={i18n}
         animation={animation}
         handlers={handlers}
       />
       <AngleLayer
         layout={layout}
+        i18n={i18n}
         animation={animation}
         handlers={handlers}
       />
       <PointLayer
         layout={layout}
+        i18n={i18n}
         animation={animation}
         handlers={handlers}
       />

@@ -8,7 +8,7 @@ import { getAnimationProps } from '../animation/chartAnimations'
  * Renders zodiac sectors and sign glyphs from layout.signs.
  * This layer owns zodiac visuals only; ring sizing comes from layout/rings.
  */
-export default function ZodiacLayer({ layout, animation, handlers }) {
+export default function ZodiacLayer({ layout, i18n, animation, handlers }) {
   return (
     <g data-layer-id="zodiac">
       {layout.signs.map((item) => {
@@ -18,7 +18,7 @@ export default function ZodiacLayer({ layout, animation, handlers }) {
           entityId: sign.entityId,
           role: 'zodiac-sector',
           kind: 'sign',
-          label: sign.id,
+          label: i18n.sign(sign.id),
           data: { ringId: item.ringId }
         })
 

@@ -3,6 +3,7 @@ import './ChartHintCard.css'
 export default function ChartHintCard({
   node,
   chartModel,
+  i18n,
   position,
   mode = 'floating',
   fixedPosition = { x: 16, y: 16 },
@@ -37,41 +38,41 @@ export default function ChartHintCard({
       </div>
 
       <div className="chart-hint-card__row">
-        <span>Node</span>
+        <span>{i18n.ui('lblNode')}</span>
         <strong>{node.id}</strong>
       </div>
 
       {node.entityId && (
         <div className="chart-hint-card__row">
-          <span>Entity</span>
+          <span>{i18n.ui('lblEntity')}</span>
           <strong>{node.entityId}</strong>
         </div>
       )}
 
       {node.relationId && (
         <div className="chart-hint-card__row">
-          <span>Relation</span>
+          <span>{i18n.ui('lblRelation')}</span>
           <strong>{node.relationId}</strong>
         </div>
       )}
 
       {relations.length > 0 && (
         <div className="chart-hint-card__row">
-          <span>Links</span>
+          <span>{i18n.ui('lblLinks')}</span>
           <strong>{relations.length}</strong>
         </div>
       )}
 
       {semantic.role && (
         <div className="chart-hint-card__row">
-          <span>Role</span>
+          <span>{i18n.ui('lblRole')}</span>
           <strong>{semantic.role}</strong>
         </div>
       )}
 
       {semantic.kind && (
         <div className="chart-hint-card__row">
-          <span>Kind</span>
+          <span>{i18n.ui('lblKind')}</span>
           <strong>{semantic.kind}</strong>
         </div>
       )}
