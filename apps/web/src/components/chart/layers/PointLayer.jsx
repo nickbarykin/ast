@@ -15,7 +15,13 @@ function getHaloRadius(point) {
  * Renders every chart point placed on the house ring: planets, calculated
  * points, sensitive points, and hypothetical points like Proserpina.
  */
-export default function PointLayer({ layout, i18n, animation, handlers }) {
+export default function PointLayer({
+  layout,
+  i18n,
+  animation,
+  handlers,
+  selectedEntityId
+}) {
   return (
     <g data-layer-id="points">
       {layout.points.map((item) => {
@@ -28,16 +34,19 @@ export default function PointLayer({ layout, i18n, animation, handlers }) {
           label: i18n.point(point.id),
           data: {
             ringId: item.ringId,
+            pointId: point.id,
             laneIndex: item.laneIndex,
             longitude: point.longitude
           }
         })
+        const isSelected = selectedEntityId === point.entityId
 
         return (
           <g
             key={point.entityId}
-            className="chart-point"
+            className={`chart-point${isSelected ? ' chart-point--selected' : ''}`}
             data-point-type={point.pointType}
+            data-point-id={point.id}
             {...getInteractionProps(node, handlers)}
           >
             <circle

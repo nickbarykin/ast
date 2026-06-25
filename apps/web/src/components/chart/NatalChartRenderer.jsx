@@ -18,7 +18,8 @@ export default function NatalChartRenderer({
   i18n,
   animation,
   handlers,
-  editor
+  editor,
+  selectedEntityId
 }) {
   return (
     <svg
@@ -32,12 +33,14 @@ export default function NatalChartRenderer({
         i18n={i18n}
         animation={animation}
         handlers={handlers}
+        selectedEntityId={selectedEntityId}
       />
       <HouseLayer
         layout={layout}
         i18n={i18n}
         animation={animation}
         handlers={handlers}
+        selectedEntityId={selectedEntityId}
       />
       <ZodiacLayer
         layout={layout}
@@ -50,12 +53,14 @@ export default function NatalChartRenderer({
         i18n={i18n}
         animation={animation}
         handlers={handlers}
+        selectedEntityId={selectedEntityId}
       />
       <PointLayer
         layout={layout}
         i18n={i18n}
         animation={animation}
         handlers={handlers}
+        selectedEntityId={selectedEntityId}
       />
 
       {editor && (

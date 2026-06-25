@@ -15,7 +15,13 @@ function getAspectLineClassName(aspectType) {
  * Renders aspect lines between point anchors inside the house ring.
  * Aspect geometry intentionally depends on PointLayer layout, not raw points.
  */
-export default function AspectLayer({ layout, i18n, animation, handlers }) {
+export default function AspectLayer({
+  layout,
+  i18n,
+  animation,
+  handlers,
+  selectedEntityId
+}) {
   const anchorByPointId = createAnchorMap(layout.points)
 
   return (
@@ -28,6 +34,7 @@ export default function AspectLayer({ layout, i18n, animation, handlers }) {
         if (!source || !target) {
           return null
         }
+        const isSelected = selectedEntityId === aspect.id
 
         const node = createLayerNode({
           id: `node:${aspect.id}`,
@@ -57,11 +64,12 @@ export default function AspectLayer({ layout, i18n, animation, handlers }) {
             {...getAnimationProps(
               animation,
               'aspect',
-              getAspectLineClassName(aspect.aspectType)
+              `${getAspectLineClassName(aspect.aspectType)}${isSelected ? ' chart-aspect-line--selected' : ''}`
             )}
             {...getInteractionProps(node, handlers)}
             data-aspect-type={aspect.aspectType}
             data-aspect-angle={aspect.exactAngle}
+            data-aspect-id={aspect.id}
             x1={source.x}
             y1={source.y}
             x2={target.x}

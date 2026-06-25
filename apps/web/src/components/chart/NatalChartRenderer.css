@@ -43,6 +43,16 @@
   stroke-width: 2;
 }
 
+.chart-point--selected .chart-point__halo {
+  opacity: 1;
+  stroke: #65b8ff;
+  stroke-width: 2.4;
+}
+
+.chart-point--selected .chart-point__glyph {
+  fill: #d8ecff;
+}
+
 .chart-point:hover .chart-point__glyph {
   transform-box: fill-box;
   transform-origin: center;
@@ -88,6 +98,23 @@
 .chart-aspect-line:hover {
   opacity: 0.82;
   stroke-width: 1.7;
+}
+
+.chart-aspect-line--selected {
+  opacity: 0.92;
+  stroke-width: 2.6;
+}
+
+.chart-house-sector--selected {
+  fill-opacity: 0.2;
+  stroke: #65b8ff;
+  stroke-width: 2;
+}
+
+.chart-angle-label--selected {
+  fill: #d8ecff;
+  stroke: #65b8ff;
+  stroke-width: 0.8;
 }
 
 .chart-layout-handles {

@@ -7,7 +7,13 @@ import { getAnimationProps } from '../animation/chartAnimations'
  * Renders astrological houses as sectors plus house number labels.
  * Point placement depends on this same house ring, but remains in PointLayer.
  */
-export default function HouseLayer({ layout, i18n, animation, handlers }) {
+export default function HouseLayer({
+  layout,
+  i18n,
+  animation,
+  handlers,
+  selectedEntityId
+}) {
   return (
     <g data-layer-id="houses">
       {layout.houses.map((item) => {
@@ -20,11 +26,21 @@ export default function HouseLayer({ layout, i18n, animation, handlers }) {
           label: i18n.message('houseLabel', { number: house.number }),
           data: { ringId: item.ringId, number: house.number }
         })
+        const isSelected = selectedEntityId === house.entityId
 
         return (
-          <g key={house.entityId} {...getInteractionProps(node, handlers)}>
+          <g
+            key={house.entityId}
+            className={isSelected ? 'chart-house--selected' : undefined}
+            data-house-id={house.id}
+            {...getInteractionProps(node, handlers)}
+          >
             <ArcSector
-              {...getAnimationProps(animation, 'houseSector', 'chart-house-sector')}
+              {...getAnimationProps(
+                animation,
+                'houseSector',
+                `chart-house-sector${isSelected ? ' chart-house-sector--selected' : ''}`
+              )}
               center={layout.center}
               innerRadius={item.innerRadius}
               outerRadius={item.outerRadius}

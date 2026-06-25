@@ -77,11 +77,52 @@ const DEFAULT_LAYER_VISIBILITY = {
 }
 
 function formatDegree(value) {
+  if (!Number.isFinite(value)) {
+    return '—'
+  }
+
   return value.toFixed(2)
+}
+
+function formatOrb(value) {
+  if (!Number.isFinite(value)) {
+    return '—'
+  }
+
+  return value.toFixed(2)
+}
+
+function formatModifier(value) {
+  const numberValue = Number(value)
+
+  if (!Number.isFinite(numberValue)) {
+    return value
+  }
+
+  return numberValue > 0 ? `+${numberValue}` : String(numberValue)
 }
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max)
+}
+
+function createPointEntityId(pointId) {
+  return `point:${pointId}`
+}
+
+function createHouseEntityId(houseNumber) {
+  return `house:${houseNumber}`
+}
+
+function getPointPositionLabel(point, i18n) {
+  if (!point) {
+    return ''
+  }
+
+  return i18n.message('degreeInSign', {
+    degree: formatDegree(point.degreeInSign ?? point.longitude),
+    signId: point.signId
+  })
 }
 
 function getEffectiveAspectOrb(aspect, aspectSettings) {
@@ -126,6 +167,9 @@ export default function ChartPage() {
   const [aspectSettings, setAspectSettings] = useState(DEFAULT_ASPECT_SETTINGS)
   const [visibleLayers, setVisibleLayers] = useState(DEFAULT_LAYER_VISIBILITY)
   const [visiblePointIds, setVisiblePointIds] = useState(null)
+  const [selectedEntityId, setSelectedEntityId] = useState(null)
+  const [selectionHistory, setSelectionHistory] = useState([])
+  const [selectionFuture, setSelectionFuture] = useState([])
 
   const aspectPointIds = useMemo(() => {
     if (!chartModel) {
@@ -150,6 +194,17 @@ export default function ChartPage() {
   const renderedPointIds = useMemo(() => (
     enabledPointIds.filter((pointId) => layerPointIds.includes(pointId))
   ), [enabledPointIds, layerPointIds])
+  const allPoints = useMemo(() => {
+    if (!chartModel) {
+      return {}
+    }
+
+    return {
+      ...chartModel.points,
+      ...chartModel.angles,
+      ...(chartModel.sensitivePoints || {})
+    }
+  }, [chartModel])
 
   const renderedChartModel = useMemo(() => {
     if (!chartModel) {
@@ -186,6 +241,27 @@ export default function ChartPage() {
       aspects
     }
   }, [aspectSettings, chartModel, renderedPointIds])
+
+  const sortedVisibleAspects = useMemo(() => {
+    if (!renderedChartModel) {
+      return []
+    }
+
+    const pointOrder = new Map(
+      aspectPointIds.map((pointId, index) => [pointId, index])
+    )
+
+    return [...renderedChartModel.aspects].sort((aspectA, aspectB) => {
+      const pointAOrder = pointOrder.get(aspectA.pointAId) ?? Number.MAX_SAFE_INTEGER
+      const pointBOrder = pointOrder.get(aspectB.pointAId) ?? Number.MAX_SAFE_INTEGER
+
+      if (pointAOrder !== pointBOrder) {
+        return pointAOrder - pointBOrder
+      }
+
+      return aspectA.orb - aspectB.orb
+    })
+  }, [aspectPointIds, renderedChartModel])
 
   const layout = useMemo(() => {
     if (!renderedChartModel) {
@@ -267,6 +343,102 @@ export default function ChartPage() {
 
   function handleNodeLeave() {
     setHoveredNode(null)
+  }
+
+  function selectEntity(entityId) {
+    if (!entityId || entityId === selectedEntityId) {
+      return
+    }
+
+    if (selectedEntityId) {
+      setSelectionHistory([...selectionHistory, selectedEntityId])
+    }
+
+    setSelectionFuture([])
+    setSelectedEntityId(entityId)
+  }
+
+  function goBackSelection() {
+    if (selectionHistory.length === 0) {
+      return
+    }
+
+    const previousEntityId = selectionHistory[selectionHistory.length - 1]
+
+    setSelectionHistory(selectionHistory.slice(0, -1))
+    setSelectionFuture(
+      selectedEntityId
+        ? [selectedEntityId, ...selectionFuture]
+        : selectionFuture
+    )
+    setSelectedEntityId(previousEntityId)
+  }
+
+  function goForwardSelection() {
+    if (selectionFuture.length === 0) {
+      return
+    }
+
+    const nextEntityId = selectionFuture[0]
+
+    setSelectionHistory(
+      selectedEntityId
+        ? [...selectionHistory, selectedEntityId]
+        : selectionHistory
+    )
+    setSelectionFuture(selectionFuture.slice(1))
+    setSelectedEntityId(nextEntityId)
+  }
+
+  function handleNodeClick(node, event) {
+    event.stopPropagation()
+    selectEntity(node.entityId || node.relationId)
+  }
+
+  function getPointAspects(pointId) {
+    if (!chartModel) {
+      return []
+    }
+
+    return chartModel.aspects
+      .filter((aspect) => (
+        aspect.pointAId === pointId || aspect.pointBId === pointId
+      ))
+      .sort((aspectA, aspectB) => aspectA.orb - aspectB.orb)
+  }
+
+  function getHousePoints(houseNumber) {
+    return Object.values(allPoints).filter((point) => (
+      point.houseNumber === houseNumber
+    ))
+  }
+
+  function getSelectedEntity() {
+    if (!selectedEntityId || !chartModel) {
+      return null
+    }
+
+    if (selectedEntityId.startsWith('point:')) {
+      const pointId = selectedEntityId.replace('point:', '')
+      const point = allPoints[pointId]
+
+      return point ? { type: 'point', id: pointId, entity: point } : null
+    }
+
+    if (selectedEntityId.startsWith('house:')) {
+      const houseNumber = Number(selectedEntityId.replace('house:', ''))
+      const house = chartModel.houses.find((item) => item.number === houseNumber)
+
+      return house ? { type: 'house', id: selectedEntityId, entity: house } : null
+    }
+
+    if (selectedEntityId.startsWith('aspect:')) {
+      const aspect = chartModel.aspects.find((item) => item.id === selectedEntityId)
+
+      return aspect ? { type: 'aspect', id: selectedEntityId, entity: aspect } : null
+    }
+
+    return null
   }
 
   function updateField(fieldName, value) {
@@ -480,6 +652,8 @@ export default function ChartPage() {
     }
   }
 
+  const selectedEntity = getSelectedEntity()
+
   return (
     <main className="chart-page">
       <div className="chart-page__locale-switcher">
@@ -666,7 +840,7 @@ export default function ChartPage() {
             </button>
           </div>
 
-          <div className="chart-page__stage-content">
+          <div className={`chart-page__stage-content${selectedEntity ? ' chart-page__stage-content--with-inspector' : ''}`}>
             <div className="chart-page__chart">
               {visibleLayout ? (
               <>
@@ -676,8 +850,10 @@ export default function ChartPage() {
                   handlers={{
                     onNodeEnter: handleNodeEnter,
                     onNodeMove: handleNodeMove,
-                    onNodeLeave: handleNodeLeave
+                    onNodeLeave: handleNodeLeave,
+                    onNodeClick: handleNodeClick
                   }}
+                  selectedEntityId={selectedEntityId}
                   editor={{
                     houseRing,
                     handlePositions: layoutHandlePositions,
@@ -758,20 +934,30 @@ export default function ChartPage() {
                   <div className="chart-page__point-layer-list">
                     {aspectPointIds.map((pointId) => {
                       const pointIsVisible = isPointVisible(pointId)
+                      const point = allPoints[pointId]
+                      const pointEntityId = createPointEntityId(pointId)
+                      const pointIsSelected = selectedEntityId === pointEntityId
 
                       return (
                         <div
                           key={pointId}
-                          className="chart-page__sub-layer-row"
+                          className={`chart-page__sub-layer-row${pointIsSelected ? ' chart-page__sub-layer-row--selected' : ''}`}
                           data-point-id={pointId}
+                          onClick={() => selectEntity(pointEntityId)}
                         >
                           <span>{i18n.point(pointId)}</span>
+                          <strong>
+                            {point ? getPointPositionLabel(point, i18n) : '—'}
+                          </strong>
                           <button
                             type="button"
                             className="chart-page__visibility-button"
                             aria-label={getVisibilityLabel(pointIsVisible)}
                             aria-pressed={pointIsVisible}
-                            onClick={() => togglePointVisibility(pointId)}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              togglePointVisibility(pointId)
+                            }}
                           >
                             <span className="chart-page__visibility-icon" />
                           </button>
@@ -781,16 +967,22 @@ export default function ChartPage() {
                   </div>
                 </details>
 
-                <section className="chart-page__aspect-list-panel">
-                  <h3>{i18n.ui('lblAspectList')}</h3>
+                <details className="chart-page__layer-tree" data-layer-id="aspects" open>
+                  <summary>
+                    <span>{i18n.ui('lblAspectList')}</span>
+                  </summary>
+
+                  <section className="chart-page__aspect-list-panel">
                   <div className="chart-page__aspect-list">
-                    {(renderedChartModel?.aspects || []).map((aspect) => (
-                      <div
+                    {sortedVisibleAspects.map((aspect) => (
+                      <button
                         key={aspect.id}
-                        className="chart-page__aspect-list-row"
+                        type="button"
+                        className={`chart-page__aspect-list-row${selectedEntityId === aspect.id ? ' chart-page__aspect-list-row--selected' : ''}`}
                         data-aspect-type={aspect.aspectType}
                         data-point-a-id={aspect.pointAId}
                         data-point-b-id={aspect.pointBId}
+                        onClick={() => selectEntity(aspect.id)}
                       >
                         <span>{i18n.aspect(aspect.aspectType)}</span>
                         <strong>
@@ -799,18 +991,205 @@ export default function ChartPage() {
                             pointBId: aspect.pointBId
                           })}
                         </strong>
-                      </div>
+                        <em>{formatOrb(aspect.orb)}°</em>
+                      </button>
                     ))}
 
-                    {(!renderedChartModel || renderedChartModel.aspects.length === 0) && (
+                    {(!renderedChartModel || sortedVisibleAspects.length === 0) && (
                       <p className="chart-page__settings-empty">
                         {i18n.ui('lblNoVisibleAspects')}
                       </p>
                     )}
                   </div>
-                </section>
+                  </section>
+                </details>
               </div>
             </aside>
+
+            {selectedEntity && (
+              <aside className="chart-page__selection-inspector">
+                <header className="chart-page__selection-header">
+                  <div>
+                    <span>{i18n.ui('lblSelected')}</span>
+                    <h3>
+                      {selectedEntity.type === 'point' && i18n.point(selectedEntity.id)}
+                      {selectedEntity.type === 'aspect' && i18n.aspect(selectedEntity.entity.aspectType)}
+                      {selectedEntity.type === 'house' && i18n.message('houseLabel', {
+                        number: selectedEntity.entity.number
+                      })}
+                    </h3>
+                  </div>
+
+                  <div className="chart-page__selection-nav">
+                    <button
+                      type="button"
+                      className="chart-page__nav-button"
+                      aria-label={i18n.ui('lblBack')}
+                      disabled={selectionHistory.length === 0}
+                      onClick={goBackSelection}
+                    >
+                      {'<'}
+                    </button>
+                    <button
+                      type="button"
+                      className="chart-page__nav-button"
+                      aria-label={i18n.ui('lblForward')}
+                      disabled={selectionFuture.length === 0}
+                      onClick={goForwardSelection}
+                    >
+                      {'>'}
+                    </button>
+                  </div>
+                </header>
+
+                {selectedEntity.type === 'point' && (
+                  <div className="chart-page__selection-body">
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblKind')}</span>
+                      <strong>{selectedEntity.entity.pointType}</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblPointGroup')}</span>
+                      <strong>{selectedEntity.entity.pointGroup}</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblLongitude')}</span>
+                      <strong>{formatDegree(selectedEntity.entity.longitude)}°</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblZodiacLayer')}</span>
+                      <strong>{getPointPositionLabel(selectedEntity.entity, i18n)}</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblHouseLayer')}</span>
+                      {selectedEntity.entity.houseNumber ? (
+                        <button
+                          type="button"
+                          className="chart-page__entity-link"
+                          onClick={() => selectEntity(createHouseEntityId(
+                            selectedEntity.entity.houseNumber
+                          ))}
+                        >
+                          {i18n.message('houseLabel', {
+                            number: selectedEntity.entity.houseNumber
+                          })}
+                        </button>
+                      ) : (
+                        <strong>-</strong>
+                      )}
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblRetrograde')}</span>
+                      <strong>{selectedEntity.entity.isRetrograde ? i18n.ui('lblYes') : i18n.ui('lblNo')}</strong>
+                    </div>
+                    <div className="chart-page__selection-stack">
+                      <span>{i18n.ui('lblAspectList')}</span>
+                      {getPointAspects(selectedEntity.id).map((aspect) => (
+                        <button
+                          key={aspect.id}
+                          type="button"
+                          className="chart-page__entity-chip"
+                          onClick={() => selectEntity(aspect.id)}
+                        >
+                          {i18n.aspect(aspect.aspectType)} · {i18n.message('aspectPairLabel', {
+                            pointAId: aspect.pointAId,
+                            pointBId: aspect.pointBId
+                          })} · {formatOrb(aspect.orb)}°
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedEntity.type === 'aspect' && (
+                  <div className="chart-page__selection-body">
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblAspectTypes')}</span>
+                      <strong>{i18n.aspect(selectedEntity.entity.aspectType)}</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblFrom')}</span>
+                      <button
+                        type="button"
+                        className="chart-page__entity-link"
+                        onClick={() => selectEntity(createPointEntityId(
+                          selectedEntity.entity.pointAId
+                        ))}
+                      >
+                        {i18n.point(selectedEntity.entity.pointAId)}
+                      </button>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblTo')}</span>
+                      <button
+                        type="button"
+                        className="chart-page__entity-link"
+                        onClick={() => selectEntity(createPointEntityId(
+                          selectedEntity.entity.pointBId
+                        ))}
+                      >
+                        {i18n.point(selectedEntity.entity.pointBId)}
+                      </button>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblExactAngle')}</span>
+                      <strong>{formatDegree(selectedEntity.entity.exactAngle)}°</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblActualAngle')}</span>
+                      <strong>{formatDegree(selectedEntity.entity.actualAngle)}°</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblOrb')}</span>
+                      <strong>{formatOrb(selectedEntity.entity.orb)}°</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblEffectiveOrb')}</span>
+                      <strong>
+                        {formatOrb(getEffectiveAspectOrb(
+                          selectedEntity.entity,
+                          aspectSettings
+                        ))}°
+                      </strong>
+                    </div>
+                  </div>
+                )}
+
+                {selectedEntity.type === 'house' && (
+                  <div className="chart-page__selection-body">
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblHouseLayer')}</span>
+                      <strong>{selectedEntity.entity.number}</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblLongitude')}</span>
+                      <strong>{formatDegree(selectedEntity.entity.cuspLongitude)}°</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblZodiacLayer')}</span>
+                      <strong>{i18n.sign(selectedEntity.entity.signId)}</strong>
+                    </div>
+                    <div className="chart-page__selection-row">
+                      <span>{i18n.ui('lblSize')}</span>
+                      <strong>{formatDegree(selectedEntity.entity.size)}°</strong>
+                    </div>
+                    <div className="chart-page__selection-stack">
+                      <span>{i18n.ui('lblContains')}</span>
+                      {getHousePoints(selectedEntity.entity.number).map((point) => (
+                        <button
+                          key={point.entityId}
+                          type="button"
+                          className="chart-page__entity-chip"
+                          onClick={() => selectEntity(point.entityId)}
+                        >
+                          {i18n.point(point.id)} · {getPointPositionLabel(point, i18n)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </aside>
+            )}
           </div>
         </section>
       </section>

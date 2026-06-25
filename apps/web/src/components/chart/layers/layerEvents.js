@@ -24,6 +24,7 @@ export function getInteractionProps(node, handlers) {
   return {
     onMouseEnter: (event) => handlers.onNodeEnter?.(node, event),
     onMouseMove: (event) => handlers.onNodeMove?.(node, event),
-    onMouseLeave: (event) => handlers.onNodeLeave?.(node, event)
+    onMouseLeave: (event) => handlers.onNodeLeave?.(node, event),
+    onClick: (event) => handlers.onNodeClick?.(node, event)
   }
 }
