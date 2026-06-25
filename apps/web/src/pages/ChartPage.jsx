@@ -20,6 +20,39 @@ const CHART_CENTER = CHART_SIZE / 2
 const MIN_HOUSE_WIDTH = 48
 const MIN_HOUSE_INNER_RADIUS = 105
 const MAX_HOUSE_OUTER_RADIUS = 300
+const ASPECT_TYPES = ['conjunction', 'sextile', 'square', 'trine', 'opposition']
+const DEFAULT_ASPECT_ORBS = Object.freeze({
+  conjunction: 8,
+  sextile: 5,
+  square: 6,
+  trine: 6,
+  opposition: 8
+})
+
+const DEFAULT_POINT_ORB_MODIFIERS = Object.freeze({
+  sun: 2,
+  moon: 2,
+  mercury: 0,
+  venus: 0,
+  mars: 0,
+  jupiter: 0,
+  saturn: 0,
+  uranus: -1,
+  neptune: -1,
+  pluto: -1,
+  chiron: -2,
+  northNodeMean: -2,
+  southNodeMean: -2,
+  northNodeTrue: -2,
+  southNodeTrue: -2,
+  lilithMean: -3,
+  lilithOsculating: -3,
+  ascendant: -2,
+  mc: -2,
+  vertex: -3,
+  proserpina: -3
+})
+const ASPECT_POINT_IDS = Object.freeze(Object.keys(DEFAULT_POINT_ORB_MODIFIERS))
 
 const DEFAULT_RING_OPTIONS = {
   [RING_ID.HOUSES]: {
@@ -28,12 +61,47 @@ const DEFAULT_RING_OPTIONS = {
   }
 }
 
+const DEFAULT_ASPECT_SETTINGS = {
+  enabledTypes: Object.fromEntries(
+    ASPECT_TYPES.map((aspectType) => [aspectType, true])
+  ),
+  orbs: DEFAULT_ASPECT_ORBS,
+  pointModifiers: DEFAULT_POINT_ORB_MODIFIERS,
+  enabledPointIds: null
+}
+
+const DEFAULT_LAYER_VISIBILITY = {
+  zodiac: true,
+  houses: true,
+  angles: true
+}
+
 function formatDegree(value) {
   return value.toFixed(2)
 }
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max)
+}
+
+function getEffectiveAspectOrb(aspect, aspectSettings) {
+  const baseOrb = Number(aspectSettings.orbs[aspect.aspectType])
+  const pointAModifier = Number(
+    aspectSettings.pointModifiers[aspect.pointAId] ?? 0
+  )
+  const pointBModifier = Number(
+    aspectSettings.pointModifiers[aspect.pointBId] ?? 0
+  )
+
+  if (
+    !Number.isFinite(baseOrb) ||
+    !Number.isFinite(pointAModifier) ||
+    !Number.isFinite(pointBModifier)
+  ) {
+    return null
+  }
+
+  return Math.max(0, baseOrb + pointAModifier + pointBModifier)
 }
 
 export default function ChartPage() {
@@ -54,18 +122,98 @@ export default function ChartPage() {
   const [hintPosition, setHintPosition] = useState({ x: 0, y: 0 })
   const [hintMode] = useState('floating')
   const [activeHandle, setActiveHandle] = useState(null)
+  const [isAspectSettingsOpen, setIsAspectSettingsOpen] = useState(false)
+  const [aspectSettings, setAspectSettings] = useState(DEFAULT_ASPECT_SETTINGS)
+  const [visibleLayers, setVisibleLayers] = useState(DEFAULT_LAYER_VISIBILITY)
+  const [visiblePointIds, setVisiblePointIds] = useState(null)
 
-  const layout = useMemo(() => {
+  const aspectPointIds = useMemo(() => {
+    if (!chartModel) {
+      return ASPECT_POINT_IDS
+    }
+
+    return Array.from(
+      new Set(
+        [
+          ...ASPECT_POINT_IDS,
+          ...chartModel.aspects.flatMap((aspect) => [
+            aspect.pointAId,
+            aspect.pointBId
+          ])
+        ]
+      )
+    )
+  }, [chartModel])
+
+  const enabledPointIds = aspectSettings.enabledPointIds ?? aspectPointIds
+  const layerPointIds = visiblePointIds ?? aspectPointIds
+  const renderedPointIds = useMemo(() => (
+    enabledPointIds.filter((pointId) => layerPointIds.includes(pointId))
+  ), [enabledPointIds, layerPointIds])
+
+  const renderedChartModel = useMemo(() => {
     if (!chartModel) {
       return null
     }
 
-    return buildNatalLayout(chartModel, {
+    const enabledPointSet = new Set(renderedPointIds)
+    const aspects = chartModel.aspects.filter((aspect) => {
+      const maxOrb = getEffectiveAspectOrb(aspect, aspectSettings)
+
+      return (
+        aspectSettings.enabledTypes[aspect.aspectType] &&
+        maxOrb != null &&
+        aspect.orb <= maxOrb &&
+        enabledPointSet.has(aspect.pointAId) &&
+        enabledPointSet.has(aspect.pointBId)
+      )
+    })
+    const points = Object.fromEntries(
+      Object.entries(chartModel.points).filter(([pointId]) => (
+        enabledPointSet.has(pointId)
+      ))
+    )
+    const sensitivePoints = Object.fromEntries(
+      Object.entries(chartModel.sensitivePoints || {}).filter(([pointId]) => (
+        enabledPointSet.has(pointId)
+      ))
+    )
+
+    return {
+      ...chartModel,
+      points,
+      sensitivePoints,
+      aspects
+    }
+  }, [aspectSettings, chartModel, renderedPointIds])
+
+  const layout = useMemo(() => {
+    if (!renderedChartModel) {
+      return null
+    }
+
+    return buildNatalLayout(renderedChartModel, {
       width: CHART_SIZE,
       height: CHART_SIZE,
       rings: ringOptions
     })
-  }, [chartModel, ringOptions])
+  }, [ringOptions, renderedChartModel])
+
+  const visibleLayout = useMemo(() => {
+    if (!layout) {
+      return null
+    }
+
+    return {
+      ...layout,
+      signs: visibleLayers.zodiac ? layout.signs : [],
+      houses: visibleLayers.houses ? layout.houses : [],
+      angles: visibleLayers.angles ? layout.angles : {
+        axes: [],
+        labels: []
+      }
+    }
+  }, [layout, visibleLayers])
 
   const chartSummary = useMemo(() => {
     if (!chartModel) {
@@ -82,9 +230,9 @@ export default function ChartPage() {
       moon,
       ascendant,
       housesCount: chartModel.getHouses().length,
-      aspectsCount: chartModel.aspects.length
+      aspectsCount: renderedChartModel?.aspects.length ?? 0
     }
-  }, [chartModel])
+  }, [chartModel, renderedChartModel])
 
   const houseRing = ringOptions[RING_ID.HOUSES]
   const layoutHandlePositions = {
@@ -205,6 +353,90 @@ export default function ChartPage() {
 
   function resetLayout() {
     setRingOptions(DEFAULT_RING_OPTIONS)
+  }
+
+  function resetAspectSettings() {
+    setAspectSettings(DEFAULT_ASPECT_SETTINGS)
+  }
+
+  function updateAspectType(aspectType, isEnabled) {
+    setAspectSettings((currentSettings) => ({
+      ...currentSettings,
+      enabledTypes: {
+        ...currentSettings.enabledTypes,
+        [aspectType]: isEnabled
+      }
+    }))
+  }
+
+  function updateAspectOrb(aspectType, value) {
+    setAspectSettings((currentSettings) => ({
+      ...currentSettings,
+      orbs: {
+        ...currentSettings.orbs,
+        [aspectType]: value
+      }
+    }))
+  }
+
+  function updatePointOrbModifier(pointId, value) {
+    setAspectSettings((currentSettings) => ({
+      ...currentSettings,
+      pointModifiers: {
+        ...currentSettings.pointModifiers,
+        [pointId]: value
+      }
+    }))
+  }
+
+  function updateAspectPoint(pointId, isEnabled) {
+    setAspectSettings((currentSettings) => {
+      const currentPointIds = currentSettings.enabledPointIds ?? aspectPointIds
+      const nextPointIds = isEnabled
+        ? Array.from(new Set([...currentPointIds, pointId]))
+        : currentPointIds.filter((currentPointId) => currentPointId !== pointId)
+
+      return {
+        ...currentSettings,
+        enabledPointIds: nextPointIds
+      }
+    })
+  }
+
+  function selectAllAspectPoints() {
+    setAspectSettings((currentSettings) => ({
+      ...currentSettings,
+      enabledPointIds: null
+    }))
+  }
+
+  function toggleLayer(layerId) {
+    setVisibleLayers((currentLayers) => ({
+      ...currentLayers,
+      [layerId]: !currentLayers[layerId]
+    }))
+  }
+
+  function togglePointVisibility(pointId) {
+    setVisiblePointIds((currentPointIds) => {
+      const currentVisiblePointIds = currentPointIds ?? aspectPointIds
+
+      if (currentVisiblePointIds.includes(pointId)) {
+        return currentVisiblePointIds.filter((visiblePointId) => (
+          visiblePointId !== pointId
+        ))
+      }
+
+      return Array.from(new Set([...currentVisiblePointIds, pointId]))
+    })
+  }
+
+  function isPointVisible(pointId) {
+    return layerPointIds.includes(pointId)
+  }
+
+  function getVisibilityLabel(isVisible) {
+    return isVisible ? i18n.ui('lblHide') : i18n.ui('lblShow')
   }
 
   function useBrowserTimezone() {
@@ -424,11 +656,22 @@ export default function ChartPage() {
         </aside>
 
         <section className="chart-page__stage">
-          <div className="chart-page__chart">
-            {layout ? (
+          <div className="chart-page__toolbar" aria-label={i18n.ui('lblToolbar')}>
+            <button
+              type="button"
+              className="chart-page__tool-button"
+              onClick={() => setIsAspectSettingsOpen(true)}
+            >
+              {i18n.ui('lblAspectSettings')}
+            </button>
+          </div>
+
+          <div className="chart-page__stage-content">
+            <div className="chart-page__chart">
+              {visibleLayout ? (
               <>
                 <NatalChartRenderer
-                  layout={layout}
+                  layout={visibleLayout}
                   i18n={i18n}
                   handlers={{
                     onNodeEnter: handleNodeEnter,
@@ -455,14 +698,275 @@ export default function ChartPage() {
                 />
 
               </>
-            ) : (
+              ) : (
               <div className="chart-page__empty">
                 <span>{i18n.ui('lblReady')}</span>
               </div>
-            )}
+              )}
+            </div>
+
+            <aside className="chart-page__layer-palette">
+              <header className="chart-page__layer-palette-header">
+                <h2>{i18n.ui('lblLayerPalette')}</h2>
+              </header>
+
+              <div className="chart-page__layer-list">
+                <div className="chart-page__layer-row" data-layer-id="zodiac">
+                  <span>{i18n.ui('lblZodiacLayer')}</span>
+                  <button
+                    type="button"
+                    className="chart-page__visibility-button"
+                    aria-label={getVisibilityLabel(visibleLayers.zodiac)}
+                    aria-pressed={visibleLayers.zodiac}
+                    onClick={() => toggleLayer('zodiac')}
+                  >
+                    <span className="chart-page__visibility-icon" />
+                  </button>
+                </div>
+
+                <div className="chart-page__layer-row" data-layer-id="angles">
+                  <span>{i18n.ui('lblAngleLayer')}</span>
+                  <button
+                    type="button"
+                    className="chart-page__visibility-button"
+                    aria-label={getVisibilityLabel(visibleLayers.angles)}
+                    aria-pressed={visibleLayers.angles}
+                    onClick={() => toggleLayer('angles')}
+                  >
+                    <span className="chart-page__visibility-icon" />
+                  </button>
+                </div>
+
+                <div className="chart-page__layer-row" data-layer-id="houses">
+                  <span>{i18n.ui('lblHouseLayer')}</span>
+                  <button
+                    type="button"
+                    className="chart-page__visibility-button"
+                    aria-label={getVisibilityLabel(visibleLayers.houses)}
+                    aria-pressed={visibleLayers.houses}
+                    onClick={() => toggleLayer('houses')}
+                  >
+                    <span className="chart-page__visibility-icon" />
+                  </button>
+                </div>
+
+                <details className="chart-page__layer-tree" data-layer-id="points" open>
+                  <summary>
+                    <span>{i18n.ui('lblPointLayer')}</span>
+                  </summary>
+
+                  <div className="chart-page__point-layer-list">
+                    {aspectPointIds.map((pointId) => {
+                      const pointIsVisible = isPointVisible(pointId)
+
+                      return (
+                        <div
+                          key={pointId}
+                          className="chart-page__sub-layer-row"
+                          data-point-id={pointId}
+                        >
+                          <span>{i18n.point(pointId)}</span>
+                          <button
+                            type="button"
+                            className="chart-page__visibility-button"
+                            aria-label={getVisibilityLabel(pointIsVisible)}
+                            aria-pressed={pointIsVisible}
+                            onClick={() => togglePointVisibility(pointId)}
+                          >
+                            <span className="chart-page__visibility-icon" />
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </details>
+
+                <section className="chart-page__aspect-list-panel">
+                  <h3>{i18n.ui('lblAspectList')}</h3>
+                  <div className="chart-page__aspect-list">
+                    {(renderedChartModel?.aspects || []).map((aspect) => (
+                      <div
+                        key={aspect.id}
+                        className="chart-page__aspect-list-row"
+                        data-aspect-type={aspect.aspectType}
+                        data-point-a-id={aspect.pointAId}
+                        data-point-b-id={aspect.pointBId}
+                      >
+                        <span>{i18n.aspect(aspect.aspectType)}</span>
+                        <strong>
+                          {i18n.message('aspectPairLabel', {
+                            pointAId: aspect.pointAId,
+                            pointBId: aspect.pointBId
+                          })}
+                        </strong>
+                      </div>
+                    ))}
+
+                    {(!renderedChartModel || renderedChartModel.aspects.length === 0) && (
+                      <p className="chart-page__settings-empty">
+                        {i18n.ui('lblNoVisibleAspects')}
+                      </p>
+                    )}
+                  </div>
+                </section>
+              </div>
+            </aside>
           </div>
         </section>
       </section>
+
+      {isAspectSettingsOpen && (
+        <div
+          className="chart-page__dialog-backdrop"
+          role="presentation"
+          onMouseDown={() => setIsAspectSettingsOpen(false)}
+        >
+          <section
+            className="chart-page__dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aspect-settings-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className="chart-page__dialog-header">
+              <div>
+                <h2 id="aspect-settings-title">
+                  {i18n.ui('lblAspectSettings')}
+                </h2>
+                <p>{i18n.ui('lblAspectSettingsNote')}</p>
+              </div>
+
+              <button
+                type="button"
+                className="chart-page__icon-button"
+                aria-label={i18n.ui('lblClose')}
+                onClick={() => setIsAspectSettingsOpen(false)}
+              >
+                x
+              </button>
+            </header>
+
+            <div className="chart-page__dialog-grid">
+              <section className="chart-page__settings-section">
+                <div className="chart-page__section-head">
+                  <h3>{i18n.ui('lblAspectTypes')}</h3>
+                  <button
+                    type="button"
+                    onClick={resetAspectSettings}
+                    className="chart-page__text-button"
+                  >
+                    {i18n.ui('lblReset')}
+                  </button>
+                </div>
+
+                <div className="chart-page__aspect-settings-list">
+                  {ASPECT_TYPES.map((aspectType) => (
+                    <label
+                      key={aspectType}
+                      className="chart-page__aspect-setting"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={aspectSettings.enabledTypes[aspectType]}
+                        onChange={(event) => updateAspectType(
+                          aspectType,
+                          event.target.checked
+                        )}
+                      />
+                      <span>{i18n.aspect(aspectType)}</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max={DEFAULT_ASPECT_ORBS[aspectType]}
+                        step="0.1"
+                        value={aspectSettings.orbs[aspectType]}
+                        onChange={(event) => updateAspectOrb(
+                          aspectType,
+                          event.target.value
+                        )}
+                        className="chart-page__orb-input"
+                        aria-label={i18n.message('aspectOrbLabel', {
+                          aspectType
+                        })}
+                      />
+                      <strong>°</strong>
+                    </label>
+                  ))}
+                </div>
+              </section>
+
+              <section className="chart-page__settings-section">
+                <div className="chart-page__section-head">
+                  <h3>{i18n.ui('lblAspectPoints')}</h3>
+                  <button
+                    type="button"
+                    onClick={selectAllAspectPoints}
+                    className="chart-page__text-button"
+                  >
+                    {i18n.ui('lblSelectAll')}
+                  </button>
+                </div>
+
+                <div className="chart-page__point-filter-list">
+                  {aspectPointIds.map((pointId) => (
+                    <label
+                      key={pointId}
+                      className="chart-page__point-filter"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={enabledPointIds.includes(pointId)}
+                        onChange={(event) => updateAspectPoint(
+                          pointId,
+                          event.target.checked
+                        )}
+                      />
+                      <span>{i18n.point(pointId)}</span>
+                      <input
+                        type="number"
+                        min="-8"
+                        max="8"
+                        step="0.5"
+                        value={aspectSettings.pointModifiers[pointId] ?? 0}
+                        onChange={(event) => updatePointOrbModifier(
+                          pointId,
+                          event.target.value
+                        )}
+                        className="chart-page__modifier-input"
+                        aria-label={i18n.message('pointOrbModifierLabel', {
+                          pointId
+                        })}
+                      />
+                      <strong>°</strong>
+                    </label>
+                  ))}
+
+                  {!chartModel && (
+                    <p className="chart-page__settings-empty">
+                      {i18n.ui('lblNoAspectsYet')}
+                    </p>
+                  )}
+                </div>
+              </section>
+            </div>
+
+            <footer className="chart-page__dialog-actions">
+              <span>
+                {i18n.message('visibleAspectsLabel', {
+                  count: renderedChartModel?.aspects.length ?? 0
+                })}
+              </span>
+              <button
+                type="button"
+                className="chart-page__button chart-page__button--primary"
+                onClick={() => setIsAspectSettingsOpen(false)}
+              >
+                {i18n.ui('lblDone')}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
     </main>
   )
 }

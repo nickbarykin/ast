@@ -50,11 +50,44 @@
 }
 
 .chart-aspect-line {
-  stroke-width: 1;
+  stroke: #c0c7d1;
+  stroke-linecap: round;
+  stroke-width: 1.25;
+  opacity: 0.42;
+}
+
+.chart-aspect-line--conjunction {
+  stroke: #d9c779;
+  opacity: 0.48;
+  stroke-width: 1.35;
+}
+
+.chart-aspect-line--sextile {
+  stroke: #65b8ff;
+  opacity: 0.46;
+}
+
+.chart-aspect-line--trine {
+  stroke: #4f8cff;
+  opacity: 0.48;
+}
+
+.chart-aspect-line--square {
+  stroke: #ff6961;
+  opacity: 0.5;
+  stroke-width: 1.35;
+}
+
+.chart-aspect-line--opposition {
+  stroke: #ff4f64;
+  opacity: 0.52;
+  stroke-dasharray: 5 4;
+  stroke-width: 1.35;
 }
 
 .chart-aspect-line:hover {
-  opacity: 0.8;
+  opacity: 0.82;
+  stroke-width: 1.7;
 }
 
 .chart-layout-handles {

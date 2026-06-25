@@ -7,6 +7,10 @@ function createAnchorMap(points) {
   )
 }
 
+function getAspectLineClassName(aspectType) {
+  return `chart-aspect-line chart-aspect-line--${aspectType}`
+}
+
 /**
  * Renders aspect lines between point anchors inside the house ring.
  * Aspect geometry intentionally depends on PointLayer layout, not raw points.
@@ -39,6 +43,9 @@ export default function AspectLayer({ layout, i18n, animation, handlers }) {
           data: {
             ringId: item.ringId,
             aspectType: aspect.aspectType,
+            exactAngle: aspect.exactAngle,
+            actualAngle: aspect.actualAngle,
+            orb: aspect.orb,
             pointAId: aspect.pointAId,
             pointBId: aspect.pointBId
           }
@@ -47,8 +54,14 @@ export default function AspectLayer({ layout, i18n, animation, handlers }) {
         return (
           <line
             key={aspect.id}
-            {...getAnimationProps(animation, 'aspect', 'chart-aspect-line')}
+            {...getAnimationProps(
+              animation,
+              'aspect',
+              getAspectLineClassName(aspect.aspectType)
+            )}
             {...getInteractionProps(node, handlers)}
+            data-aspect-type={aspect.aspectType}
+            data-aspect-angle={aspect.exactAngle}
             x1={source.x}
             y1={source.y}
             x2={target.x}

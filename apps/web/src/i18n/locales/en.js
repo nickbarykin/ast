@@ -18,6 +18,24 @@ export const en = {
     lblAscendantShort: 'ASC',
     lblHouses: 'Houses',
     lblAspects: 'Aspects',
+    lblToolbar: 'Toolbar',
+    lblAspectSettings: 'Aspect Settings',
+    lblAspectSettingsNote: 'Effective orb = aspect orb + both point modifiers. Filters already calculated aspects.',
+    lblAspectTypes: 'Types and orbs',
+    lblAspectPoints: 'Points',
+    lblLayerPalette: 'Layers',
+    lblZodiacLayer: 'Zodiac',
+    lblAngleLayer: 'Angles',
+    lblHouseLayer: 'Houses',
+    lblPointLayer: 'Points',
+    lblAspectList: 'Aspects',
+    lblNoVisibleAspects: 'No visible aspects',
+    lblShow: 'Show',
+    lblHide: 'Hide',
+    lblSelectAll: 'All',
+    lblNoAspectsYet: 'Settings apply after calculating a chart',
+    lblClose: 'Close',
+    lblDone: 'Done',
     lblHouseInner: 'House inner',
     lblHouseOuter: 'House outer',
     lblNode: 'Node',
@@ -84,6 +102,18 @@ export const en = {
     ),
     aspectLabel: ({ pointAId, aspectType, pointBId, i18n }) => (
       `${i18n.point(pointAId)} ${i18n.aspect(aspectType).toLowerCase()} ${i18n.point(pointBId)}`
+    ),
+    aspectOrbLabel: ({ aspectType, i18n }) => (
+      `Orb: ${i18n.aspect(aspectType).toLowerCase()}`
+    ),
+    pointOrbModifierLabel: ({ pointId, i18n }) => (
+      `Orb modifier: ${i18n.point(pointId)}`
+    ),
+    aspectPairLabel: ({ pointAId, pointBId, i18n }) => (
+      `${i18n.point(pointAId)} - ${i18n.point(pointBId)}`
+    ),
+    visibleAspectsLabel: ({ count }) => (
+      `Visible aspects: ${count}`
     )
   }
 }

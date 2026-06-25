@@ -18,6 +18,24 @@ export const ru = {
     lblAscendantShort: 'ASC',
     lblHouses: 'Дома',
     lblAspects: 'Аспекты',
+    lblToolbar: 'Панель инструментов',
+    lblAspectSettings: 'Настройки аспектов',
+    lblAspectSettingsNote: 'Итоговый орбис = орбис аспекта + модификаторы обеих точек. Фильтрует уже рассчитанные аспекты.',
+    lblAspectTypes: 'Типы и орбисы',
+    lblAspectPoints: 'Точки',
+    lblLayerPalette: 'Слои',
+    lblZodiacLayer: 'Зодиак',
+    lblAngleLayer: 'Углы',
+    lblHouseLayer: 'Дома',
+    lblPointLayer: 'Точки',
+    lblAspectList: 'Аспекты',
+    lblNoVisibleAspects: 'Нет видимых аспектов',
+    lblShow: 'Показать',
+    lblHide: 'Скрыть',
+    lblSelectAll: 'Все',
+    lblNoAspectsYet: 'Настройки применятся после расчета карты',
+    lblClose: 'Закрыть',
+    lblDone: 'Готово',
     lblHouseInner: 'Внутр. радиус домов',
     lblHouseOuter: 'Внеш. радиус домов',
     lblNode: 'Узел',
@@ -147,6 +165,18 @@ export const ru = {
     ),
     aspectLabel: ({ pointAId, aspectType, pointBId, i18n }) => (
       `${i18n.point(pointAId)}: ${i18n.aspect(aspectType).toLowerCase()} с ${i18n.point(pointBId, 'instrumental')}`
+    ),
+    aspectOrbLabel: ({ aspectType, i18n }) => (
+      `Орбис: ${i18n.aspect(aspectType).toLowerCase()}`
+    ),
+    pointOrbModifierLabel: ({ pointId, i18n }) => (
+      `Модификатор орбиса: ${i18n.point(pointId)}`
+    ),
+    aspectPairLabel: ({ pointAId, pointBId, i18n }) => (
+      `${i18n.point(pointAId)} - ${i18n.point(pointBId)}`
+    ),
+    visibleAspectsLabel: ({ count }) => (
+      `Показано аспектов: ${count}`
     )
   }
 }
